@@ -39,6 +39,6 @@ which is an awsome book, though now somewhat outdated
 in `hello.py` the return is simple `HttpResponse`
 * If you want to see a pure python, handling requests, headers, etc. see the first 
 example here: [Pure Python](http://dfpp.readthedocs.io/en/latest/chapter_01.html)
-* `gunicorn` is an often used python webserver use together with Nginx or Openshift, or ..
-* `gunicorn` is [will look for a WSGI callable named application if not specified.](http://docs.gunicorn.org/en/stable/run.html)
+* `gunicorn` is an often used python webserver,  used frequently together with Nginx or Openshift, or ..
+* `gunicorn` [will look for a WSGI callable named application if not specified.](http://docs.gunicorn.org/en/stable/run.html)
  so one could have written `gunicorn hello:application -b 0.0.0.0:8888`
