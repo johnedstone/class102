@@ -42,3 +42,4 @@ example here: [Pure Python](http://dfpp.readthedocs.io/en/latest/chapter_01.html
 * `gunicorn` is an often used python webserver,  used frequently together with Nginx or Openshift, or ..
 * `gunicorn` [will look for a WSGI callable named application if not specified.](http://docs.gunicorn.org/en/stable/run.html)
  so one could have written `gunicorn hello:application -b 0.0.0.0:8888`
+* Someday talk about the django toolbar
