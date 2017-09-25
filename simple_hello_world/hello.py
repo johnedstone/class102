@@ -29,9 +29,13 @@ from django.http import HttpResponse
 def index(request):
     return HttpResponse('Hello World')
 
+def boo_hoo(request):
+    return HttpResponse('Boo Hoo!!')
+
 
 urlpatterns = (
     url(r'^$', index),
+    url(r'^boo-hoo/$', boo_hoo),
 )
 
 
