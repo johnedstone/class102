@@ -23,10 +23,10 @@ gunicorn hello -b 0.0.0.0:8888 --access-logfile -
 ```
 
 #### Homework
-* Add a new url pattern and a function to display new content
+* For your Homework: Add a new URL pattern and a function to display new content
 * Hint: I've done Boo Hoo!
-* Notice now the we're introducing MVC, i.e. you can change the URL and get the same content
-* Homework #2: Add a new URL that returns 'Hello World', so that you have 2 urls returning the same content.
+* For Extra Credit: Add a new URL pattern that returns 'Hello World', so that you have 2 urls returning the same content.
+* Reminder: talk about MVC, e.g. one can change the URL and get the same content
 
 #### Comments
 * This first example is [stolen shameless from ... ](https://github.com/lightweightdjango/examples/blob/chapter-1/hello.py)
