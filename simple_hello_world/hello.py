@@ -7,7 +7,10 @@ DEBUG = os.environ.get('DEBUG', 'on') == 'on'
 
 SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(32))
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+# Changed so that ALLOWED_HOSTS = ['*'] so we can run on 0.0.0.0 for demonstration,
+#    not for production
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 settings.configure(
     DEBUG=DEBUG,
