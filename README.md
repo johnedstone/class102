@@ -3,7 +3,7 @@ Explore writing python web apps, including REST API
 
 ## Purpose
 Let's explore
-* simply python web app
+* simple python web app
 * exploring Separation of Concersn, MVC (model-view-controller)
 * writing a python REST API
 * how does a python REST API look under the covers compared to a Node.js REST API
