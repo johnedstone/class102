@@ -15,6 +15,7 @@ pip freeze | egrep -i django | tee -a requirements.txt
 #### Django setup
 ```
 django-admin startproject myproject
+cd myproject/
 django-admin startapp myapp
 ```
 ##### Current layout
@@ -43,7 +44,6 @@ django-admin startapp myapp
 Continuing ...
 
 ```
-cd myproject/
 sed -i 's/^ALLOWED_HOSTS/# ALLOWED_HOSTS/' myproject/settings.py
 echo 'ALLOWED_HOSTS = ["*"]' >> myproject/settings.py
 python manage.py runserver 0.0.0.0:8888
@@ -65,3 +65,43 @@ python manage.py runserver 0.0.0.0:8888
 # make this second user staff or superuser or ...
 
 ```
+
+Add view and route
+* Update myproject/settings.py per the diff below
+* Update myproject/urls.py per the diff below
+* Create myapp/urls.py as in this git repo
+* Update myapp/views.py as in this git repo
+* do `python manage.py runserver 0.0.0.0:8888`
+* Next: Add models, and move on to the UI, then move on to REST API
+
+```
+git diff myproject/settings.py
+@@ -37,6 +37,7 @@ INSTALLED_APPS = [
+     'django.contrib.sessions',
+     'django.contrib.messages',
+     'django.contrib.staticfiles',
++    'myapp',
+ ]
+
+ MIDDLEWARE = [
+
+
+git diff myproject/urls.py
+@@ -13,9 +13,12 @@ Including another URLconf
+     1. Import the include() function: from django.conf.urls import url, include
+     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+ """
+-from django.conf.urls import url
++from django.conf.urls import url, include
+ from django.contrib import admin
++from django.shortcuts import redirect
+
+ urlpatterns = [
+     url(r'^admin/', admin.site.urls),
++    url(r'^hello/', include('myapp.urls')),
++    url(r'^$', lambda x: redirect('/hello/', permanent=False)),
+ ]
+
+```
+### References
+* https://docs.djangoproject.com/en/1.11/intro/tutorial01/
