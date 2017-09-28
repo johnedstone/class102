@@ -16,6 +16,7 @@ pip freeze | egrep -i django | tee requirements.txt
 pip install --proxy ${PIP_PROXY} gunicorn
 pip freeze |egrep gunicorn | tee -a requirements.txt
 
+cd chap01_simple_hello_world
 gunicorn hello -b 0.0.0.0:8888 --access-logfile -
 # or simply
 # gunicorn hello -b 0.0.0.0:8888
