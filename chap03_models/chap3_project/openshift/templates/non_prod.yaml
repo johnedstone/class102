@@ -215,6 +215,6 @@ parameters:
 - name: SUPERUSER_PASSWORD
   displayName: Superuser Password
   description: Create Superuser
-  value: 'goblygook' 
+  value: "'goblygook'"
 
 # vim: ai et ts=2 sts=2 sw=2 nu
