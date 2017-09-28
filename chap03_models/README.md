@@ -8,6 +8,9 @@ Also introducing the django debug toolbar.  And, to get this to work we will be
 running the server locally, and using ssh with port forwading.  If you don't care
 about the debug tool, you can continue to use 0.0.0.0:8080 and set `ALLOWED_HOST=['*']`
 
+### References
+* https://docs.djangoproject.com/en/1.11/intro/tutorial01/
+
 ### Setup
 
 ```
@@ -102,4 +105,58 @@ python manage.py runserver
 Note: All of the above was done at tag v0.1
 
 * update chap3_app/{models,admins}.py as in tag v0.2
+* Then
+```
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
 * runserver and go to http://127.0.0.1:8000/admin/ and add two users and two servers
+* Also explore the django shell
+
+```
+python manage.py shell
+>>> from chap3_app.models import Server
+>>> s = Server.objects.all()
+>>> for ea in s:
+...     print(ea.pk, ea.ip, ea.user, ea.user.username)
+...
+1 4.4.4.4 userone userone
+2 8.8.8.8 usertwo usertwo
+```
+
+#### More python shell, for fun
+```
+python manage.py shell
+>>> from django.contrib.auth.models import User
+>>> u = User(username="userthree")
+>>> u.full_clean()
+Traceback (most recent call last):
+  django.core.exceptions.ValidationError: {'password': ['This field cannot be blank.']}
+# okay
+>>> u.save()
+
+>>> from chap3_app.models import Server
+>>> s = Server()
+>>> s.user =u
+>>> s.name = 'serverthree'
+>>> s.ip = 8
+>>> s.full_clean()
+Traceback (most recent call last):
+django.core.exceptions.ValidationError: {'ip': ['Enter a valid IPv4 address.']}
+>>> s.ip = '8.8.4.4'
+>>> s.full_clean()
+>>> s.save()
+```
+
+### Setup views and templating: tag v0.3
+* update chap3_app/{views,urls}.py
+* update chap3_project/urls.py
+* copy chap3_app/{templates,static} directory
+* then runserver
+
+```
+python manage.py runserver
+```

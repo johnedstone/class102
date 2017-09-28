@@ -4,6 +4,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'servers/', include('chap3_app.urls', namespace='servers')),
 ]
 
 
