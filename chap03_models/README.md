@@ -172,9 +172,9 @@ python manage.py runserver
 pwd
 class102/chap03_models/chap3_project
 
-pip install --proxy ${PIP_PROXY} django-bootstrap-form whitenoise
+pip install --proxy ${PIP_PROXY} django-bootstrap-form whitenoise gunicorn
 
-pip freeze | egrep -i 'bootstrap|whitenoise' | tee -a ../requirements.txt
+pip freeze | egrep -i 'bootstrap|whitenoise|gunicorn' | tee -a ../requirements.txt
 django-bootstrap-form==3.3
 whitenoise==3.3.1
 
@@ -294,3 +294,12 @@ tree -I "*pyc" -I "*cache*"  ../
 * take a look at `openshift_parameters.sh` file
 * take a look at openshift/templates/{non_prod,prod}.yaml
 * notice there is a custom `.s2i/bin/run` script to create a superuser upon deployment
+* Deploy in Openshift
+
+```
+oc new-project userid-class102
+oc new-app --param-file openshift_parameters.sh -f openshift/templates/non_prod.yaml
+oc logs bc/class102-chap3 -f
+oc logs dc/class102-chap3 -f
+oc get pods
+```

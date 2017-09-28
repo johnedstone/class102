@@ -40,47 +40,6 @@ objects:
     name: ${NAME}
     annotations:
       description: Keeps track of changes in the application image
-- kind: BuildConfig
-  apiVersion: v1
-  metadata:
-    name: ${NAME}
-    annotations:
-      description: Defines how to build the application
-  spec:
-    source:
-      type: Git
-      git:
-        uri: ${SOURCE_REPOSITORY_URL}
-        ref: ${SOURCE_REPOSITORY_REF}
-      #sourceSecret:
-      #  name: ${GITHUB_WEBHOOK_SECRET}
-      contextDir: ${CONTEXT_DIR}
-    strategy:
-      type: Source
-      sourceStrategy:
-        from:
-          kind: ImageStreamTag
-          namespace: ${NAMESPACE}
-          name: python:3.5
-        env:
-        - name: PIP_PROXY
-          value: ${PIP_PROXY}
-        - name: PIP_INDEX_URL
-          value: ${PIP_INDEX_URL}
-        - name: UPGRADE_PIP_TO_LATEST
-          value: ${UPGRADE_PIP_TO_LATEST}
-    output:
-      to:
-        kind: ImageStreamTag
-        name: ${NAME}:latest
-    triggers:
-    - type: ImageChange
-    - type: ConfigChange
-    - type: GitHub
-      github:
-        secret: ${GITHUB_WEBHOOK_SECRET}
-    postCommit:
-      script: './manage.py test'
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
