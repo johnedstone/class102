@@ -11,7 +11,8 @@ source ~/.virtualenvs/class102/bin/activate
 export PIP_PROXY=<ip:port>
 pip install --proxy ${PIP_PROXY} pip --upgrade
 pip install --proxy ${PIP_PROXY} django
-pip freeze | egrep -i django | tee requirements.txt
+echo "# python2.7" > requirements.txt
+pip freeze | egrep -i django | tee -a requirements.txt
 
 pip install --proxy ${PIP_PROXY} gunicorn
 pip freeze |egrep gunicorn | tee -a requirements.txt
