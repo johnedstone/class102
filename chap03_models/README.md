@@ -98,7 +98,8 @@ python manage.py runserver
 # or runserver at 0.0.0.0:8000 and miss seeing the debug toolbar
 ```
 
-### Setup models.py
+### Setup models.py: tag v0.2
 Note: All of the above was done at tag v0.1
 
-
+* update chap3_app/{models,admins}.py as in tag v0.2
+* runserver and go to http://127.0.0.1:8000/admin/ and add two users and two servers
