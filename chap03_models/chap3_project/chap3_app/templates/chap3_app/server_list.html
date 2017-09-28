@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block subtitle %} Server Simple{% endblock subtitle %}
+
+{% block content %}
+
+<pre>
+
+{% for ea in server_list %} 
+  {{ ea.pk }} | {{ ea.name }} | {{ ea.user.username }} | {{ ea.name|upper }}
+{% endfor %}
+
+</pre>
+
+{% endblock content %}
+ 
+
+
