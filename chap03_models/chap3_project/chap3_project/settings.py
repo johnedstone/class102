@@ -21,6 +21,7 @@ INSTALLED_APPS = [
 
     # third party apps
     'debug_toolbar',
+    'bootstrapform',
 
     # apps
     'chap3_app',
@@ -151,5 +152,8 @@ LOGGING = {
     }
 }
 
+# v0.4
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/servers/private/'
 
 # vim: ai et ts=4 sts=4 sw=4 ru nu

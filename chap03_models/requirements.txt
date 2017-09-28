@@ -1,3 +1,6 @@
 # python 3.5
 Django==1.11.5
 django-debug-toolbar==1.8
+django-bootstrap-form==3.3
+whitenoise==3.3.1
+django-cors-headers==2.1.0

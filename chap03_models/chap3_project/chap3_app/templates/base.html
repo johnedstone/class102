@@ -49,7 +49,8 @@
           <ul class="nav navbar-nav">
             <li><a href="{% url 'servers:server_simple' %}">Server Simple</a></li>
             <li><a href="{% url 'servers:class_based_server_list' %}">Class Based Views</a></li>
-            {% if user.is_authenticated %}<li><a href="{% url 'myproject_logout' %}">Log out</a></li>{% endif %}
+            <li><a href="{% url 'servers:private' %}">Private</a></li>
+            {% if user.is_authenticated %}<li><a href="{% url 'logout' %}">Log out</a></li>{% endif %}
           </ul>
           {% if request.user.is_authenticated %}
           <p class="navbar-text pull-right">{{ request.user }}</p>
@@ -64,6 +65,9 @@
 
     {% block page_header %}
     {% endblock page_header %}
+
+    {% block private %}
+    {% endblock private %}
 
     {% block content %}
     {% endblock content %}

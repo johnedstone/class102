@@ -13,3 +13,13 @@ if settings.DEBUG:
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ]
+
+## Added for v0.4
+from django.contrib.auth import views as auth_views
+urlpatterns += [
+    # https://simpleisbetterthancomplex.com/tutorial/2016/06/27/how-to-use-djangos-built-in-login-system.html
+    url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/login/'}, name='logout'),
+]
+
+# vim: ai et ts=4 sts=4 sw=4 nu ru

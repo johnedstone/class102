@@ -160,3 +160,77 @@ django.core.exceptions.ValidationError: {'ip': ['Enter a valid IPv4 address.']}
 ```
 python manage.py runserver
 ```
+
+### Add login: tag v0.4
+
+* Prepare for authentication and eventually Openshift
+```
+pwd
+class102/chap03_models/chap3_project
+
+pip install --proxy ${PIP_PROXY} django-bootstrap-form whitenoise
+
+pip freeze | egrep -i 'bootstrap|whitenoise' | tee -a ../requirements.txt
+django-bootstrap-form==3.3
+whitenoise==3.3.1
+
+```
+
+* Grab a fresh copy of chap3_project/{settings,urls}.py from v0.4
+* Grab a fresh copy of chap3_app/{urls, views}.py from v0.4
+* Grab a fesh copy of the templates base.html, server_list.html, add the 404.html and login.html, and grab private html from v0.4
+
+```
+python manage.py runserver
+```
+
+* Files as of v0.4
+```
+ tree -I "*pyc" -I "*cache*"  ../
+../
+|-- chap3_project
+|   |-- chap3_app
+|   |   |-- admin.py
+|   |   |-- apps.py
+|   |   |-- __init__.py
+|   |   |-- migrations
+|   |   |   |-- 0001_initial.py
+|   |   |   `-- __init__.py
+|   |   |-- models.py
+|   |   |-- static
+|   |   |   `-- css
+|   |   |       `-- style.css
+|   |   |-- templates
+|   |   |   |-- 404.html
+|   |   |   |-- base.html
+|   |   |   |-- chap3_app
+|   |   |   |   |-- private.html
+|   |   |   |   `-- server_list.html
+|   |   |   `-- login.html
+|   |   |-- tests.py
+|   |   |-- urls.py
+|   |   `-- views.py
+|   |-- chap3_project
+|   |   |-- __init__.py
+|   |   |-- settings_orig.py
+|   |   |-- settings.py
+|   |   `-- urls.py
+|   |-- db.sqlite3
+|   |-- manage.py
+|   `-- wsgi.py
+|-- README.md
+`-- requirements.txt
+```
+
+#### Test for Production
+
+```
+export ALLOWED_HOSTS='*' DEBUG=off
+python manage.py runserver
+python manage.py runserver
+
+# Test a bad url in browser and see if the custom 404.html along with response of 404 is working
+# Then
+unset ALLOWED_HOSTS
+unset DEBUG
+```
