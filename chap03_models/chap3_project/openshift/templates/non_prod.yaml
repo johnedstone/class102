@@ -52,8 +52,8 @@ objects:
       git:
         uri: ${SOURCE_REPOSITORY_URL}
         ref: ${SOURCE_REPOSITORY_REF}
-      sourceSecret:
-        name: ${GITHUB_WEBHOOK_SECRET}
+      #sourceSecret:
+      #  name: ${GITHUB_WEBHOOK_SECRET}
       contextDir: ${CONTEXT_DIR}
     strategy:
       type: Source
@@ -173,10 +173,10 @@ parameters:
   displayName: Application hostname
   description: The exposed hostname that will route to the Django service, if left
     blank a value will be defaulted.
-- name: GITHUB_WEBHOOK_SECRET
-  displayName: GitHub webhook secret
-  description: A secret string used to configure the GitHub webhook
-  value: sshsecret
+#- name: GITHUB_WEBHOOK_SECRET
+#  displayName: GitHub webhook secret
+#  description: A secret string used to configure the GitHub webhook
+#  value: sshsecret
 - name: PIP_PROXY
   displayName: PIP PROXY
   description: PIP environment variable for proxy
@@ -212,5 +212,9 @@ parameters:
   displayName: Upgrade pip to the latest
   description: Upgrade pip to the latest
   value: 'yes' 
+- name: SUPERUSER_PASSWORD
+  displayName: Superuser Password
+  description: Create Superuser
+  value: 'goblygook' 
 
 # vim: ai et ts=2 sts=2 sw=2 nu
