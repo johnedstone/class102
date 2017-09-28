@@ -81,6 +81,10 @@ tree ../
 `-- requirements.txt
 ```
 
+
+### What is the current working directory?
+Most of the following is run from `class102/chap03_models/chap3_project`
+
 ### More setup
 * Move wsgi for openshift
 * setup settings and template for openshift
@@ -234,3 +238,10 @@ python manage.py runserver
 unset ALLOWED_HOSTS
 unset DEBUG
 ```
+
+### Deploy on Openshift: v0.5
+
+* update chap3_project/{settings,urls}.py
+* take a look at typical_paramters.txt file
+* take a look at openshift/templates/{non_prod,prod}.yaml
+* notice there is a custom `.s2i/bin/run` script to create a superuser upon deployment

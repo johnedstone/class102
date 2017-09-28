@@ -22,4 +22,18 @@ urlpatterns += [
     url(r'^logout/$', auth_views.logout, {'next_page': '/login/'}, name='logout'),
 ]
 
+## Added for v0.5
+
+
+from django.http import HttpResponse
+from django.views.generic.base import RedirectView
+
+
+urlpatterns += [
+    url(r'^health/$', lambda request:HttpResponse(status=200)),
+    url(r'^liveness/$', lambda request:HttpResponse(status=200)),
+    url(r'^$',
+        RedirectView.as_view(pattern_name='servers:server_simple', permanent=False),
+                                                         name='home'),
+]
 # vim: ai et ts=4 sts=4 sw=4 nu ru
