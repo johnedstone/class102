@@ -1,3 +1,0 @@
-# python 3.5
-Django==1.11.5
-django-debug-toolbar==1.8

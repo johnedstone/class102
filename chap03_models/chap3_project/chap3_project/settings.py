@@ -21,6 +21,7 @@ INSTALLED_APPS = [
 
     # third party apps
     'debug_toolbar',
+    'bootstrapform',
 
     # apps
     'chap3_app',
@@ -151,5 +152,15 @@ LOGGING = {
     }
 }
 
+# v0.4
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/servers/private/'
 
+# v0.5
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
+
+USE_TERMINATION_EDGE = os.environ.get('USE_TEMINATION_EDGE', 'off') == 'on'
+if USE_TERMINATION_EDGE:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # vim: ai et ts=4 sts=4 sw=4 ru nu

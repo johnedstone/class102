@@ -1,0 +1,9 @@
+{% extends 'chap3_app/server_list.html' %}
+
+{% block subtitle %} | Private{% endblock subtitle %}
+
+{% block private %}
+    {% if private_info %}
+        <h4>{{ private_info }}</h4>
+    {% endif %}
+{% endblock private %}

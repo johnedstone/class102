@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% block subtitle %} | Sign In{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-3">
+            <h3>Login</h3>
+            <hr>
+
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form|bootstrap }}
+    
+    <div class="form-group">
+        {# <div class="col-sm-offset-2 col-sm-10"> #}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+
+    </form>
+
+        </div>
+    </div>
+    
+{% endblock content %}
