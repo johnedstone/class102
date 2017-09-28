@@ -93,7 +93,12 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 
-# and view in browser after first tunnelling
+# and view in browser after first tunnelling - notice toolbar
 # ssh -x -C -L 8000:127.0.0.1:8000 user@fqdn
 # or runserver at 0.0.0.0:8000 and miss seeing the debug toolbar
 ```
+
+### Setup models.py
+Note: All of the above was done at tag v0.1
+
+
