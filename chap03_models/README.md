@@ -242,6 +242,6 @@ unset DEBUG
 ### Deploy on Openshift: v0.5
 
 * update chap3_project/{settings,urls}.py
-* take a look at typical_paramters.txt file
+* take a look at `openshift_parameters.sh` file
 * take a look at openshift/templates/{non_prod,prod}.yaml
 * notice there is a custom `.s2i/bin/run` script to create a superuser upon deployment
