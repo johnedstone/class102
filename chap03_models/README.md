@@ -46,3 +46,34 @@ tree
 
 0 directories, 1 file
 ```
+
+### Start django project and app
+```
+pwd
+class102/chap03_models
+
+django-admin startproject chap3_project
+cd chap3_project/
+django-admin startapp chap3_app
+
+tree ../
+../
+|-- chap3_project
+|   |-- chap3_app
+|   |   |-- admin.py
+|   |   |-- apps.py
+|   |   |-- __init__.py
+|   |   |-- migrations
+|   |   |   `-- __init__.py
+|   |   |-- models.py
+|   |   |-- tests.py
+|   |   `-- views.py
+|   |-- chap3_project
+|   |   |-- __init__.py
+|   |   |-- settings.py
+|   |   |-- urls.py
+|   |   `-- wsgi.py
+|   `-- manage.py
+|-- README.md
+`-- requirements.txt
+```
