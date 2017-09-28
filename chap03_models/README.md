@@ -77,3 +77,23 @@ tree ../
 |-- README.md
 `-- requirements.txt
 ```
+
+### More setup
+* Move wsgi for openshift
+* setup settings and template for openshift
+
+```
+mv chap3_project/wsgi.py .
+```
+
+* Update `chap3_project/{settings,urls}.py` as of commit ... then run these commands
+
+```
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+
+# and view in browser after first tunnelling
+# ssh -x -C -L 8000:127.0.0.1:8000 user@fqdn
+# or runserver at 0.0.0.0:8000 and miss seeing the debug toolbar
+```
