@@ -35,10 +35,14 @@ def index(request):
 def boo_hoo(request):
     return HttpResponse('Boo Hoo!!')
 
+def super_saiyans(request):
+    return HttpResponse('Super Saiyans!! Defenders of Earth!!!  Protectors of the Dragonballs!!!!')
 
 urlpatterns = (
     url(r'^$', index),
     url(r'^boo-hoo/$', boo_hoo),
+    url(r'^super-saiyans/$', super_saiyans),
+    url(r'^hello-world/$', index)
 )
 
 
