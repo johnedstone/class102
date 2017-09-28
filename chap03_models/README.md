@@ -241,6 +241,55 @@ unset DEBUG
 
 ### Deploy on Openshift: v0.5
 
+* mv requirements.txt in one directory for Openshift
+
+```
+pwd
+class102/chap03_models/chap3_project
+mv ../requirements.txt .
+
+tree -I "*pyc" -I "*cache*"  ../
+../
+|-- chap3_project
+|   |-- chap3_app
+|   |   |-- admin.py
+|   |   |-- apps.py
+|   |   |-- __init__.py
+|   |   |-- migrations
+|   |   |   |-- 0001_initial.py
+|   |   |   `-- __init__.py
+|   |   |-- models.py
+|   |   |-- static
+|   |   |   `-- css
+|   |   |       `-- style.css
+|   |   |-- templates
+|   |   |   |-- 404.html
+|   |   |   |-- base.html
+|   |   |   |-- chap3_app
+|   |   |   |   |-- private.html
+|   |   |   |   `-- server_list.html
+|   |   |   `-- login.html
+|   |   |-- tests.py
+|   |   |-- urls.py
+|   |   `-- views.py
+|   |-- chap3_project
+|   |   |-- __init__.py
+|   |   |-- settings_orig.py
+|   |   |-- settings.py
+|   |   `-- urls.py
+|   |-- db.sqlite3
+|   |-- manage.py
+|   |-- openshift
+|   |   `-- templates
+|   |       `-- non_prod.yaml
+|   |-- openshift_parameters.sh
+|   |-- requirements.txt
+|   `-- wsgi.py
+`-- README.md
+
+
+```
+
 * update chap3_project/{settings,urls}.py
 * take a look at `openshift_parameters.sh` file
 * take a look at openshift/templates/{non_prod,prod}.yaml
