@@ -68,7 +68,7 @@ if should_migrate; then
 fi
 
 ## Create superuser
-python "$manage_file" shell -c "from django.contrib.auth.models import User;u = User();u.username = 'boohoo';u.set_password(${SUPERUSER_PASSWORD});u.is_staff = True;u.is_superuser = True;u.full_clean();u.save()"
+# python "$manage_file" shell -c "from django.contrib.auth.models import User;u = User();u.username = 'boohoo';u.set_password(${SUPERUSER_PASSWORD});u.is_staff = True;u.is_superuser = True;u.full_clean();u.save()"
  
 if is_gunicorn_installed; then
   if [[ -z "$APP_MODULE" ]]; then
