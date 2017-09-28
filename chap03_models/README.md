@@ -86,7 +86,7 @@ tree ../
 mv chap3_project/wsgi.py .
 ```
 
-* Update `chap3_project/{settings,urls}.py` as of commit ... then run these commands
+* Update `chap3_project/{settings,urls}.py` as of tag v0.1, then run these commands
 
 ```
 python manage.py makemigrations
