@@ -43,7 +43,7 @@ class102/chap04_restapi
 
 ```
 
-### Install package dependencies v0.6
+### Install package dependencies v0.6 - moving beyond, now, outside SCL
 
 ```
 source ~/.virtualenvs/class102_chap04/bin/activate
@@ -101,7 +101,7 @@ tree -I '*pyc'
 python manage.py migrate
 python manage.py createsuperuser
 
-python manage.py runser
+python manage.py runserver
 
 # Curl or use Httpie (http)
 http http://127.0.0.1:8000/api-token-auth/ username=boohoo password=boohoowoohoo
