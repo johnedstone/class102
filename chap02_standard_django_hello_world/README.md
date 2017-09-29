@@ -18,6 +18,17 @@ django-admin startproject myproject
 cd myproject/
 django-admin startapp myapp
 ```
+
+#### What is the current directory
+At this point, the following commands will be executed from
+
+```
+pwd
+class102/chap02_standard_django_hello_world/myproject
+````
+
+
+
 ##### Current layout
 ```
 |-- myapp

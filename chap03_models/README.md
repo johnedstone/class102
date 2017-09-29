@@ -59,6 +59,9 @@ django-admin startproject chap3_project
 cd chap3_project/
 django-admin startapp chap3_app
 
+pwd
+class102/chap03_models/chap3_project
+
 tree ../
 ../
 |-- chap3_project
@@ -190,7 +193,10 @@ python manage.py runserver
 
 * Files as of v0.4
 ```
- tree -I "*pyc" -I "*cache*"  ../
+pwd
+class102/chap03_models/chap3_project
+
+tree -I "*pyc" -I "*cache*"  ../
 ../
 |-- chap3_project
 |   |-- chap3_app
