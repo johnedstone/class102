@@ -237,7 +237,7 @@ X-Frame-Options: SAMEORIGIN
 }
 ```
 
-### REST API: doing a task, v0.8
+### REST API: doing a task, v0.9
 ```
 pip install --proxy ${PIP_PROXY} boto3
 pip freeze | egrep -i 'boto3' >> requirements.txt
