@@ -21,6 +21,9 @@ http  https://promotion-restapi.fqdn/api/deployconfigs/ "Authorization: Token <t
 http  https://promotion-restapi.fqdn/api/promotions/ "Authorization: Token <token>"
 ```
 
+### References
+* http://www.django-rest-framework.org/
+* http://www.cdrf.co/
 ### Let's get started - getting python 3.5 virtualenv on Centos/RH v0.6
 Setting up, again, independent of previous chapters
 
@@ -113,4 +116,123 @@ Allow: POST, OPTIONS
 }
 
 
+```
+
+### Setting up models v0.7
+
+* Setup models
+    * copy aws_bucket_app/{urls,models,serializers,views}.py
+    * copy restapi_project/urls.py
+
+```
+python manage.py makemigrations
+python manage.py migrate
+
+# make users
+python manage.py shell
+>>> from django.contrib.auth.models import User
+>>> u = User()
+>>> u.username = 'userone'
+>>> u.set_password('harrypotter')
+>>> u.full_clean()
+>>> u.save()
+>>>
+
+```
+
+### Examples with models v0.7 using python HTTPie, not curl
+```
+http http://127.0.0.1:8000/
+HTTP/1.0 302 Found
+Location: /api/
+
+
+http http://127.0.0.1:8000/api/
+HTTP/1.0 200 OK
+{
+    "dog-breed": "http://127.0.0.1:8000/api/dog-breed/",
+    "rainbow-color": "http://127.0.0.1:8000/api/rainbow-color/"
+}
+
+http http://127.0.0.1:8000/api/rainbow-color/ year_discovered='1911'
+HTTP/1.0 400 Bad Request
+{
+    "color": [
+        "This field is required."
+    ]
+}
+
+http http://127.0.0.1:8000/api/rainbow-color/ color='yellow' year_discovered='1911'
+HTTP/1.0 201 Created
+Location: http://127.0.0.1:8000/api/rainbow-color/2/
+{
+    "color": "yellow",
+    "fullname": "yellow:",
+    "url": "http://127.0.0.1:8000/api/rainbow-color/2/"
+}
+
+http http://127.0.0.1:8000/api/rainbow-color/ color='yellow' year_discovered='1911'
+HTTP/1.0 400 Bad Request
+{
+    "color": [
+        "rainbow color with this color already exists."
+    ]
+}
+
+http http://127.0.0.1:8000/api/rainbow-color/
+HTTP/1.0 200 OK
+[
+    {
+        "color": "blue",
+        "fullname": "blue:1911",
+        "url": "http://127.0.0.1:8000/api/rainbow-color/1/"
+    },
+    {
+        "color": "yellow",
+        "fullname": "yellow:",
+        "url": "http://127.0.0.1:8000/api/rainbow-color/2/"
+    }
+]
+```
+### Examples with authenication v0.7 using python HTTPie, not curl
+```
+http http://127.0.0.1:8000/api-token-auth/ username=userone password=harrypotter
+HTTP/1.0 200 OK
+{
+    "token": "c39ada004cb0f930df0ba6ca380c9485e9207913"
+}
+
+http http://127.0.0.1:8000/api/dog-breed/ "Authorization: Token c39ada004cb0f930df0ba6ca380c9485e9207913" breed='hotdog'
+HTTP/1.0 400 Bad Request
+{
+    "year_discovered": [
+        "This field is required."
+    ]
+}
+
+http http://127.0.0.1:8000/api/dog-breed/ "Authorization: Token c39ada004cb0f930df0ba6ca380c9485e9207913" breed='hotdog' year_discovered='1011'
+HTTP/1.0 201 Created
+{
+    "breed": "hotdog",
+    "created": "2017-09-29T05:28:10.700482Z",
+    "fullname": "hotdog:1011",
+    "url": "http://127.0.0.1:8000/api/dog-breed/4/",
+    "year_discovered": "1011"
+}
+
+http http://127.0.0.1:8000/api/dog-breed/4/ "Authorization: Token c39ada004cb0f930df0ba6ca380c9485e9207913"
+HTTP/1.0 200 OK
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+Content-Length: 155
+Content-Type: application/json
+Date: Fri, 29 Sep 2017 05:28:37 GMT
+Server: WSGIServer/0.2 CPython/3.5.1
+X-Frame-Options: SAMEORIGIN
+{
+    "breed": "hotdog",
+    "created": "2017-09-29T05:28:10.700482Z",
+    "fullname": "hotdog:1011",
+    "url": "http://127.0.0.1:8000/api/dog-breed/4/",
+    "year_discovered": "1011"
+}
 ```
