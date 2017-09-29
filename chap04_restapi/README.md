@@ -236,3 +236,92 @@ X-Frame-Options: SAMEORIGIN
     "year_discovered": "1011"
 }
 ```
+
+### REST API: doing a task, v0.8
+```
+pip install --proxy ${PIP_PROXY} boto3
+pip freeze | egrep -i 'boto3' >> requirements.txt
+```
+* update aws_bucket_app/{serializers,urls,viewsets,models}.py, restapi_project/settings.py
+* update environmental variables
+
+```
+python manage.py makemigrations
+python manage.py migrate
+
+source aws_keys.sh
+python manage.py runserver
+
+# Test the endpoint
+
+http http://127.0.0.1:8000/api/create-bucket/ "Authorization: Token c39ada004cb0f930df0ba6ca380c9485e9207913" bucket=johnedstone-holy-cow-1234 change=ABC1234567
+HTTP/1.0 201 Created
+Allow: GET, POST, HEAD, OPTIONS
+Content-Length: 334
+Content-Type: application/json
+Date: Fri, 29 Sep 2017 07:18:53 GMT
+Location: http://127.0.0.1:8000/api/create-bucket/3/
+
+{
+    "bucket": "johnedstone-holy-cow-1234",
+    "change": "ABC1234567",
+    "created": "2017-09-29T07:18:53.793051Z",
+    "http_status_code": 99,
+    "location": "",
+    "modified": "2017-09-29T07:18:53.793145Z",
+    "s3_error": "('Connection aborted.', ConnectionRefusedError(111, 'Connection refused'))",
+    "status": "Failed",
+    "url": "http://127.0.0.1:8000/api/create-bucket/3/"
+}
+
+http http://127.0.0.1:8000/api/create-bucket/ "Authorization: Token c39ada004cb0f930df0ba6ca380c9485e9207913"
+HTTP/1.0 200 OK
+Allow: GET, POST, HEAD, OPTIONS
+Content-Length: 995
+Content-Type: application/json
+Date: Fri, 29 Sep 2017 07:21:56 GMT
+Server: WSGIServer/0.2 CPython/3.5.1
+X-Frame-Options: SAMEORIGIN
+
+[
+    {
+        "bucket": "johnedstone-holy-cow",
+        "change": "ABC123",
+        "created": "2017-09-29T07:14:22.585989Z",
+        "http_status_code": 99,
+        "location": "",
+        "modified": "2017-09-29T07:14:22.586089Z",
+        "s3_error": "('Connection aborted.', ConnectionRefusedError(111, 'Connection refused'))",
+        "status": "Failed",
+        "url": "http://127.0.0.1:8000/api/create-bucket/1/"
+    },
+    {
+        "bucket": "johnedstone-holy-cow-123",
+        "change": "ABC123456",
+        "created": "2017-09-29T07:17:04.612530Z",
+        "http_status_code": 99,
+        "location": "",
+        "modified": "2017-09-29T07:17:04.612616Z",
+        "s3_error": "('Connection aborted.', ConnectionRefusedError(111, 'Connection refused'))",
+        "status": "Failed",
+        "url": "http://127.0.0.1:8000/api/create-bucket/2/"
+    },
+    {
+        "bucket": "johnedstone-holy-cow-1234",
+        "change": "ABC1234567",
+        "created": "2017-09-29T07:18:53.793051Z",
+        "http_status_code": 99,
+        "location": "",
+        "modified": "2017-09-29T07:18:53.793145Z",
+        "s3_error": "('Connection aborted.', ConnectionRefusedError(111, 'Connection refused'))",
+        "status": "Failed",
+        "url": "http://127.0.0.1:8000/api/create-bucket/3/"
+    }
+]
+
+
+```
+
+### To Do:
+* Deal with unique fields, upon failed requests: maybe use randomized numbers to rename, or fail-date string
+* write Openshift Template and launch in Openshift

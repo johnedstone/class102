@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 
 from rest_framework import viewsets, permissions
 
-from .models import RainbowColor, DogBreed
-from .serializers import RainbowColorSerializer, DogBreedSerializer
+from .models import RainbowColor, DogBreed, CreateBucket
+from .serializers import (RainbowColorSerializer,
+    DogBreedSerializer, CreateBucketSerializer)
 
 
 class RainbowColorViewSet(viewsets.ModelViewSet):
@@ -15,6 +16,11 @@ class DogBreedViewSet(viewsets.ModelViewSet):
     queryset = DogBreed.objects.all()
     serializer_class = DogBreedSerializer
     # http_method_names = ['get', 'head', 'options', 'patch', 'put']
+    permission_classes = (permissions.IsAuthenticated,)
+
+class CreateBucketViewSet(viewsets.ModelViewSet):
+    queryset = CreateBucket.objects.all()
+    serializer_class = CreateBucketSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
 

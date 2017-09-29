@@ -148,4 +148,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# For v0.8
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', 'hocospocus')
+AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'hocospocus')
 # vi: ai et ts=4 sts=4 sw=4 nu ru
