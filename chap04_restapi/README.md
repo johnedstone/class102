@@ -325,9 +325,41 @@ X-Frame-Options: SAMEORIGIN
 * Fix proxy
 * Fix validation, and remove unique contraint on bucket and change
 * REMEMBER to run MAKEMIGRATIONS and MIGRATE
+* Looks like AWS _doesnt' through and error_ if the bucket is already present
+```
+source ~/.virtualenvs/class102_chap04/bin/activate
+export LD_LIBRARY_PATH=/opt/rh/rh-python35/root/usr/lib64
+cd class102/chap04_restapi/restapi_project/
+source aws_keys.sh
 
-
+python manage.py shell
+>>> from aws_bucket_app.models import CreateBucket as CB
+>>> cb = CB()
+>>> cb.bucket = 'johnedstone-27-Sep'
+>>> cb.change = 'MyChange'
+>>> cb.full_clean()
+>>> cb.save()
+INFO:bucket:37:Bucket:johnedstone-27-Sep, AK: some-access-key
+>>> cb.status
+'Success'
+>>> cb.http_status_code
+200
+>>> cb.response_string
+"{'ResponseMetadata': {'RetryAttempts': 0, 'HTTPHeaders': {'server': 'AmazonS3', 'x-amz-id-2': 'H9WMtAbM9FEMPZclz2OJ8yj92yN9p7fjpXLBf3506Mudl+f+GTiXJD7S/IaGRwY3AXNN9Zaf5sI=', 'date': 'Sat, 30 Sep 2017 02:58:42 GMT', 'location': '/johnedstone-27-Sep', 'x-amz-request-id': '89698527217D91DD', 'content-length': '0'}, 'HostId': 'H9WMtAbM9FEMPZclz2OJ8yj92yN9p7fjpXLBf3506Mudl+f+GTiXJD7S/IaGRwY3AXNN9Zaf5sI=', 'RequestId': '89698527217D91DD', 'HTTPStatusCode': 200}, 'Location': '/johnedstone-27-Sep'}"
+>>>
+>>> cb_02 = CB()
+>>> cb_02.bucket = 'johnedstone-27-Sep'
+>>> cb_02.change = 'MyChange'
+>>> cb_02.full_clean()
+>>> cb_02.save()
+INFO:bucket:37:Bucket:johnedstone-27-Sep, AK: some-access-key
+>>> cb_02.status
+'Success'
+>>> cb_02.http_status_code
+200
+>>> cb_02.response_string
+"{'ResponseMetadata': {'RetryAttempts': 0, 'HTTPHeaders': {'server': 'AmazonS3', 'x-amz-id-2': 'cHDi3MM9IwlKuQUbkXinOpNkMQVwjtsb43IX4rKwjFNoiAKkhId3jBxWjZbiNbeWu+C+7Mt6ww4=', 'date': 'Sat, 30 Sep 2017 03:00:12 GMT', 'location': '/johnedstone-27-Sep', 'x-amz-request-id': 'F34D3D167408DD26', 'content-length': '0'}, 'HostId': 'cHDi3MM9IwlKuQUbkXinOpNkMQVwjtsb43IX4rKwjFNoiAKkhId3jBxWjZbiNbeWu+C+7Mt6ww4=', 'RequestId': 'F34D3D167408DD26', 'HTTPStatusCode': 200}, 'Location': '/johnedstone-27-Sep'}"
+```
 
 ### To Do:
-* Deal with unique fields, upon failed requests: maybe use randomized numbers to rename, or fail-date string
 * write Openshift Template and launch in Openshift
