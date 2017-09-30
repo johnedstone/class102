@@ -1,0 +1,4 @@
+AWS_ACCESS_KEY='access_key'
+AWS_SECRET_KEY='secret_key'
+HTTPS_PROXY='https://ip:port'
+HTTP_PROXY='http://ip:port'

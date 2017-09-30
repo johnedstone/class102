@@ -57,12 +57,13 @@ class CreateBucket(models.Model):
 
     created =  models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    change = models.CharField(max_length=25, unique=True)
-    bucket = models.CharField(max_length=50, unique=True)
-    http_status_code =  models.IntegerField(default=0)
-    location = models.CharField(max_length=50, default='')
-    s3_error = models.CharField(max_length=255, default='')
-    status = models.CharField(max_length=10, default='Pending')
+    change = models.CharField(max_length=25)
+    bucket = models.CharField(max_length=50)
+    http_status_code =  models.IntegerField(default=0, blank=True)
+    location = models.CharField(max_length=50, default='', blank=True)
+    s3_error = models.CharField(max_length=255, default='', blank=True)
+    status = models.CharField(max_length=10, default='Pending', blank=True)
+    response_string = models.CharField(max_length=255, default='', blank=True)
 
     def __str__(self):
         return '{}:{}:{}'.format(self.change, self.bucket, self.location)
@@ -81,8 +82,9 @@ class CreateBucket(models.Model):
                     self.http_status_code = result.get('http_status_code', 99)
                 else:
                     self.status = 'Success'
-                    self.location = result.get('location', '')
-                    self.http_status_code = result.get('http_status_code', 98)
+                    self.location = result.get('Location', '')
+                    self.http_status_code = result.get('ResponseMetadata', {}).get('HTTPStatusCode', 98)
+                    self.response_string = str(result)
 
         except Exception as e:
             logger.error('Save Exception: {}'.format(e))
