@@ -321,6 +321,12 @@ X-Frame-Options: SAMEORIGIN
 
 
 ```
+### Tag v0.10
+* Fix proxy
+* Fix validation, and remove unique contraint on bucket and change
+* REMEMBER to run MAKEMIGRATIONS and MIGRATE
+
+
 
 ### To Do:
 * Deal with unique fields, upon failed requests: maybe use randomized numbers to rename, or fail-date string
