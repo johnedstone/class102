@@ -325,7 +325,7 @@ X-Frame-Options: SAMEORIGIN
 * Fix proxy
 * Fix validation, and remove unique contraint on bucket and change
 * REMEMBER to run MAKEMIGRATIONS and MIGRATE
-* Looks like AWS _doesnt' through and error_ if the bucket is already present
+* Looks like AWS _doesnt' throw and error_ if the bucket is already present
 ```
 source ~/.virtualenvs/class102_chap04/bin/activate
 export LD_LIBRARY_PATH=/opt/rh/rh-python35/root/usr/lib64
