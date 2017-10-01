@@ -13,8 +13,10 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    # 'django.contrib.messages',
-    # 'django.contrib.staticfiles',
+
+    # enabled for swagger
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
 
     # Third party apps
     'rest_framework',
@@ -23,6 +25,7 @@ INSTALLED_APPS = [
 
     # Internal apps
     'aws_bucket_app',
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -32,26 +35,32 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'django.contrib.messages.middleware.MessageMiddleware',
+    # enabled for swagger
+    'django.contrib.messages.middleware.MessageMiddleware',
+
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'restapi_project.urls'
+STATIC_URL = '/static/'
 
-#TEMPLATES = [
-#    {
-#        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-#        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-#        'APP_DIRS': True,
-#        'OPTIONS': {
-#            'context_processors': [
-#                'django.template.context_processors.debug',
-#                'django.template.context_processors.request',
-#                'django.contrib.auth.context_processors.auth',
-#            ],
-#        },
-#    },
-#]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# enabled for swagger
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+            ],
+        },
+    },
+]
 
 WSGI_APPLICATION = 'wsgi.application'
 
@@ -155,4 +164,12 @@ AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'hocospocus')
 # For v0.9
 HTTP_PROXY = os.getenv('HTTP_PROXY')
 HTTPS_PROXY = os.getenv('HTTPS_PROXY')
+
+# For v.11
+# Enabled Templages, and other settings above, plus
+SWAGGER_SETTINGS = {
+    'VALIDATOR_URL': None,
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {},
+}
 # vi: ai et ts=4 sts=4 sw=4 nu ru

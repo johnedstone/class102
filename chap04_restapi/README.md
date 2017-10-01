@@ -361,5 +361,26 @@ INFO:bucket:37:Bucket:johnedstone-27-Sep, AK: some-access-key
 "{'ResponseMetadata': {'RetryAttempts': 0, 'HTTPHeaders': {'server': 'AmazonS3', 'x-amz-id-2': 'cHDi3MM9IwlKuQUbkXinOpNkMQVwjtsb43IX4rKwjFNoiAKkhId3jBxWjZbiNbeWu+C+7Mt6ww4=', 'date': 'Sat, 30 Sep 2017 03:00:12 GMT', 'location': '/johnedstone-27-Sep', 'x-amz-request-id': 'F34D3D167408DD26', 'content-length': '0'}, 'HostId': 'cHDi3MM9IwlKuQUbkXinOpNkMQVwjtsb43IX4rKwjFNoiAKkhId3jBxWjZbiNbeWu+C+7Mt6ww4=', 'RequestId': 'F34D3D167408DD26', 'HTTPStatusCode': 200}, 'Location': '/johnedstone-27-Sep'}"
 ```
 
+### Tag v0.11 Swagger - In progres
+* https://django-rest-swagger.readthedocs.io/en/latest/
+```
+pwd
+# Output: class102/chap04_restapi/restapi_project
+
+pip install --proxy $PIP_PROXY django-rest-swagger
+pip freeze | egrep -i swagger | tee -a requirements.txt
+```
+
+* Add 'rest_framework_swagger' to INSTALLED_APPS in Django settings.
+* Update `restapi_project/urls.py` and other files (see below) to tab v0.11 then runserver and visit to `/swagger`
+```
+#       modified:   aws_bucket_app/views.py
+#       modified:   requirements.txt
+#       modified:   restapi_project/settings.py
+#       modified:   restapi_project/urls.py
+```
+
+
 ### To Do:
 * write Openshift Template and launch in Openshift
+* consider using AWS Lambda

@@ -6,3 +6,4 @@ djangorestframework==3.6.4
 gunicorn==19.7.1
 httpie==0.9.9
 boto3==1.4.7
+django-rest-swagger==2.1.2
