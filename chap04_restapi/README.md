@@ -361,7 +361,7 @@ INFO:bucket:37:Bucket:johnedstone-27-Sep, AK: some-access-key
 "{'ResponseMetadata': {'RetryAttempts': 0, 'HTTPHeaders': {'server': 'AmazonS3', 'x-amz-id-2': 'cHDi3MM9IwlKuQUbkXinOpNkMQVwjtsb43IX4rKwjFNoiAKkhId3jBxWjZbiNbeWu+C+7Mt6ww4=', 'date': 'Sat, 30 Sep 2017 03:00:12 GMT', 'location': '/johnedstone-27-Sep', 'x-amz-request-id': 'F34D3D167408DD26', 'content-length': '0'}, 'HostId': 'cHDi3MM9IwlKuQUbkXinOpNkMQVwjtsb43IX4rKwjFNoiAKkhId3jBxWjZbiNbeWu+C+7Mt6ww4=', 'RequestId': 'F34D3D167408DD26', 'HTTPStatusCode': 200}, 'Location': '/johnedstone-27-Sep'}"
 ```
 
-### Tag v0.11 Swagger - In progres
+### Tag v0.11 Swagger
 * https://django-rest-swagger.readthedocs.io/en/latest/
 ```
 pwd
