@@ -3,8 +3,13 @@ AWS_SECRET_KEY='secret_key'
 HTTPS_PROXY='https://ip:port'
 HTTP_PROXY='http://ip:port'
 
+# Setting superuser in "run" script so as not to rely on persistant database
 SUPERUSER_USERNAME=
 SUPERUSER_PASSWORD=
 SUPERUSER_TOKEN=
 
-USERS='username|token username|token'
+# Setting client_id and token in "run" script so as not to rely on persistant database
+# client_id your discretion, used as username
+# generate token: python -c "import binascii, os;binascii;print(binascii.hexlify(os.urandom(10)).decode())"
+# Usage: curl -X [ POST | GET ] -H "Authorization: Token token"
+USERS='client_id|token, client_id2|token2'

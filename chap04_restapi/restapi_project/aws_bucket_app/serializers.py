@@ -30,6 +30,7 @@ class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             'bucket',
             'change',
+            'client_id_display',
             'created',
             'dry_run',
             'http_status_code',
@@ -39,7 +40,6 @@ class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
             's3_error',
             'status',
             'url',
-            'username',
             ]
         read_only_fields = [field for field in fields if field not in ['change', 'bucket', 'dry_run']]
         required = ['change', 'bucket']

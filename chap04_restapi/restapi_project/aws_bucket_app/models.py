@@ -49,6 +49,7 @@ class DogBreed(models.Model):
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
+    logger.info('Creating auth token')
     if created:
         Token.objects.create(user=instance)
 
@@ -57,6 +58,7 @@ class CreateBucket(models.Model):
 
     bucket = models.CharField(max_length=50)
     change = models.CharField(max_length=25)
+    client = models.ForeignKey(User, related_name="client", on_delete=models.CASCADE)
     created =  models.DateTimeField(auto_now_add=True)
     dry_run = models.BooleanField(default=True, blank=True)
     http_status_code =  models.IntegerField(default=0, blank=True)
@@ -65,15 +67,15 @@ class CreateBucket(models.Model):
     response_string = models.CharField(max_length=255, default='', blank=True)
     s3_error = models.CharField(max_length=255, default='', blank=True)
     status = models.CharField(max_length=10, default='Pending', blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{}:{}:{}'.format(self.change, self.bucket, self.location)
 
     # Used to avoid dealing with User hyperlink
     @property
-    def username(self):
-        return '{}'.format(self.user.username)
+    def client_id_display(self):
+        """ 'def client_id' bails as it has a conflict """
+        return '{}'.format(self.client.username)
 
     def save(self, *args, **kwargs):
         try:

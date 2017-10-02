@@ -38,7 +38,7 @@ class CreateBucketViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated
 
         # http://www.cdrf.co/3.6/rest_framework.viewsets/ModelViewSet.html
-        queryset = self.filter_queryset(self.get_queryset()).filter(user=request.user)
+        queryset = self.filter_queryset(self.get_queryset()).filter(client=request.user)
 
         if request.user.is_superuser:
             queryset = self.filter_queryset(self.get_queryset())
@@ -51,20 +51,11 @@ class CreateBucketViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
+    def perform_create(self, serializer):
+        """ http://www.django-rest-framework.org/topics/3.0-announcement/
+            http://www.cdrf.co/3.6/rest_framework.viewsets/ModelViewSet.html
+        """
 
-        # Putting this check here not in permission_classes
-        # so that Swagger will show List
-        if not request.user.is_authenticated:
-            raise NotAuthenticated
-
-        # http://www.django-rest-framework.org/topics/3.0-announcement/
-        # http://www.cdrf.co/3.6/rest_framework.viewsets/ModelViewSet.html
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)
-        headers = self.get_success_headers(serializer.data)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        serializer.save(client=self.request.user)
 
 # vim: ai et ts=4 sw=4 sts=4 ru nu

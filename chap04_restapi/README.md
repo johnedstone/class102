@@ -397,6 +397,20 @@ pip freeze | egrep -i swagger | tee -a requirements.txt
 #       modified:   restapi_project/settings.py
 ```
 
+### Tag v0.13 Changing language to 
+* Changing language fromu "username" to "Client ID" - remember to delete db and run `makemigrations`, `migrate`
+* Moved create overide to a more rational place, `preform_create`
+* files changed:
+```
+#       modified:   aws_bucket_app/models.py
+#       modified:   aws_bucket_app/serializers.py
+#       modified:   aws_bucket_app/views.py
+#       modified:   aws_keys_openshift.parm
+```
+
+### Next
+* Write Openshift template
+
 ### To Do:
 * Catch error that bucket already exists
 * Write Openshift Template
