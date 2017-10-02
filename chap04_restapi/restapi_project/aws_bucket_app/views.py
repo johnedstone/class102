@@ -55,6 +55,8 @@ class CreateBucketViewSet(viewsets.ModelViewSet):
         """ http://www.django-rest-framework.org/topics/3.0-announcement/
             http://www.cdrf.co/3.6/rest_framework.viewsets/ModelViewSet.html
         """
+        logger.info(self.request.user)
+        logger.info(serializer.validated_data)
 
         serializer.save(client=self.request.user)
 

@@ -29,13 +29,14 @@ class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
         model = CreateBucket
         fields = [
             'bucket',
+            'bucket_creation_date',
             'change',
             'client_id_display',
-            'created',
             'dry_run',
             'http_status_code',
             'location',
-            'modified',
+            'new_bucket',
+            'request_created',
             'response_string',
             's3_error',
             'status',

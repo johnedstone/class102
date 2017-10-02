@@ -408,11 +408,23 @@ pip freeze | egrep -i swagger | tee -a requirements.txt
 #       modified:   aws_keys_openshift.parm
 ```
 
+### Tag v0.14 Reporting back if bucket is pre-existing
+* Create logic to catch _pre-existing_ bucket
+* The following files were updated
+* Run `makemigration` and `migrate`
+```
+#       modified:   aws_bucket_app/bucket.py
+#       modified:   aws_bucket_app/models.py
+#       modified:   aws_bucket_app/serializers.py
+#       modified:   aws_bucket_app/views.py
+
+```
+
 ### Next
+* write management tool for setting token
 * Write Openshift template
 
 ### To Do:
-* Catch error that bucket already exists
 * Write Openshift Template
 * Include superuser and uses with token in Openshift `run` script, something like this
 ```

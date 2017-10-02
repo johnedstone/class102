@@ -57,13 +57,15 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 class CreateBucket(models.Model):
 
     bucket = models.CharField(max_length=50)
+    bucket_creation_date = models.CharField(max_length=30, default='', blank=True)
     change = models.CharField(max_length=25)
     client = models.ForeignKey(User, related_name="client", on_delete=models.CASCADE)
-    created =  models.DateTimeField(auto_now_add=True)
     dry_run = models.BooleanField(default=True, blank=True)
     http_status_code =  models.IntegerField(default=0, blank=True)
     location = models.CharField(max_length=50, default='', blank=True)
-    modified = models.DateTimeField(auto_now=True)
+    new_bucket = models.BooleanField(default=True, blank=True)
+    request_created =  models.DateTimeField(auto_now_add=True)
+    request_modified = models.DateTimeField(auto_now=True)
     response_string = models.CharField(max_length=255, default='', blank=True)
     s3_error = models.CharField(max_length=255, default='', blank=True)
     status = models.CharField(max_length=10, default='Pending', blank=True)
@@ -90,6 +92,8 @@ class CreateBucket(models.Model):
     
                 if result:
                     _error = result.get('error')
+                    self.bucket_creation_date = result.get('bucket_creation_date', '')
+                    self.new_bucket = result.get('new_bucket', True)
                     if _error:
                         self.s3_error = _error
                         self.status = 'Failed'

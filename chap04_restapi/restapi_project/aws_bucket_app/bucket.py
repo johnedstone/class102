@@ -1,4 +1,4 @@
-import botocore.endpoint
+from dateutil import tz
 from django.conf import settings
 
 # https://stackoverflow.com/questions/33480108/how-do-you-use-an-http-https-proxy-with-boto3
@@ -15,6 +15,8 @@ import logging
 from botocore.vendored.requests.exceptions import ConnectionError
 
 logger = logging.getLogger('verbose_logging')
+
+NY_TIMEZONE = tz.gettz('America/New_York')
 
 def create_s3_bucket(bucket, access_key, secret_key):
     """ Typical response
@@ -39,12 +41,34 @@ def create_s3_bucket(bucket, access_key, secret_key):
     response = {}
 
     try:
-        client = boto3.client(
+        # http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.ServiceResource.create_bucket
+        # http://boto3.readthedocs.io/en/latest/guide/migrations3.html#creating-the-connection 
+        # http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.ServiceResource.buckets
+        # http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.ServiceResource.create_bucketjjjjkku
+
+        s3 = boto3.resource(
             's3',
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key)
 
-        response = client.create_bucket(Bucket=bucket)
+
+        try:
+            response = s3.meta.client.head_bucket(Bucket=bucket)
+            bucket_obj = s3.Bucket(bucket)
+            response['bucket_creation_date'] = '{}'.format(
+                bucket_obj.creation_date.astimezone(tz=NY_TIMEZONE))
+            response['new_bucket'] = False
+
+        except botocore.exceptions.ClientError as e:
+            error_code = int(e.response['Error']['Code'])
+            if error_code == 404:
+                new_bucket = s3.create_bucket(Bucket=bucket)
+
+                response = s3.meta.client.head_bucket(Bucket=bucket)
+                response['bucket_creation_date'] = '{}'.format(
+                     new_bucket.creation_date.astimezone(tz=NY_TIMEZONE))
+                response['new_bucket'] = True
+
 
     except ConnectionError as e:
         logger.error('Connection Error: {}'.format(e))
@@ -54,6 +78,7 @@ def create_s3_bucket(bucket, access_key, secret_key):
         logger.error('Exception: {}'.format(e))
         response = {'error': e}
 
+    logger.info(response)
     return response
 
 # vim: ai et ts=4 sts=4 sw=4 ru nu
