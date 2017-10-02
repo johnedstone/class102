@@ -1,3 +1,7 @@
+### Errata
+* Note: Somehow `django-rest-framework==0.1.0` crept into the requirements file.
+This can safely be deleted.
+
 ### Quick review
 
 Note: using python HTTPie instead of curl
@@ -380,7 +384,46 @@ pip freeze | egrep -i swagger | tee -a requirements.txt
 #       modified:   restapi_project/urls.py
 ```
 
+### Tag v0.12 Using Token authentication, and
+* Added `dry-run` and `user` field to Create Bucket
+* The following files were updated
+* The db and the migration files were deleted and `makemigration` and `migrate` were run again
+```
+#       modified:   aws_bucket_app/models.py
+#       modified:   aws_bucket_app/serializers.py
+#       modified:   aws_bucket_app/views.py
+#       modified:   aws_keys_openshift.parm
+#       modified:   requirements.txt
+#       modified:   restapi_project/settings.py
+```
 
 ### To Do:
-* write Openshift Template and launch in Openshift
-* consider using AWS Lambda
+* Catch error that bucket already exists
+* Write Openshift Template
+* Include superuser and uses with token in Openshift `run` script, something like this
+```
+>>> from rest_framework.authtoken.models import Token
+>>> from django.contrib.auth.models import User
+>>> import os, binascii
+>>> binascii.hexlify(os.urandom(10)).decode()
+'332b23fe41ea75c212f4'
+>>> b = binascii.hexlify(os.urandom(10)).decode()
+>>> u = User()
+>>> u.username = 'HarryPotter'
+>>> u.set_password(b)
+>>> u.full_clean()
+>>> u.save()
+>>> u.auth_token
+<Token: dd89e5127f4974a526a6af0be7a5f79d0b99fc6a>
+>>> t = u.auth_token
+>>> t.key
+'dd89e5127f4974a526a6af0be7a5f79d0b99fc6a'
+>>> t.delete()
+(1, {'authtoken.Token': 1})
+>>> t = Token(user=u, key=b)
+>>> t.full_clean()
+>>> t.save()
+>>> u.auth_token
+<Token: cf00edd60753f7608007>
+```
+* Consider using AWS Lambda

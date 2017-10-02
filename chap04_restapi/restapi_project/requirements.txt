@@ -1,7 +1,7 @@
 # python 3.5.x
 Django==1.11.5
 django-cors-headers==2.1.0
-django-rest-framework==0.1.0
+django-rest-swagger==2.1.2
 djangorestframework==3.6.4
 gunicorn==19.7.1
 httpie==0.9.9

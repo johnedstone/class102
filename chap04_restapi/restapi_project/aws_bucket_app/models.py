@@ -55,42 +55,52 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 # @python_2_unicode_compatible
 class CreateBucket(models.Model):
 
-    created =  models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    change = models.CharField(max_length=25)
     bucket = models.CharField(max_length=50)
+    change = models.CharField(max_length=25)
+    created =  models.DateTimeField(auto_now_add=True)
+    dry_run = models.BooleanField(default=True, blank=True)
     http_status_code =  models.IntegerField(default=0, blank=True)
     location = models.CharField(max_length=50, default='', blank=True)
+    modified = models.DateTimeField(auto_now=True)
+    response_string = models.CharField(max_length=255, default='', blank=True)
     s3_error = models.CharField(max_length=255, default='', blank=True)
     status = models.CharField(max_length=10, default='Pending', blank=True)
-    response_string = models.CharField(max_length=255, default='', blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{}:{}:{}'.format(self.change, self.bucket, self.location)
 
+    # Used to avoid dealing with User hyperlink
+    @property
+    def username(self):
+        return '{}'.format(self.user.username)
+
     def save(self, *args, **kwargs):
         try:
-            result = create_s3_bucket(
-                self.bucket, settings.AWS_ACCESS_KEY, 
-                settings.AWS_SECRET_KEY)
-
-            if result:
-                _error = result.get('error')
-                if _error:
-                    self.s3_error = _error
-                    self.status = 'Failed'
-                    self.http_status_code = result.get('http_status_code', 99)
-                else:
-                    self.status = 'Success'
-                    self.location = result.get('Location', '')
-                    self.http_status_code = result.get('ResponseMetadata', {}).get('HTTPStatusCode', 98)
-                    self.response_string = str(result)
+            if self.dry_run:
+                self.status = 'Dry Run'
+                self.location = 'N/A'
+                self.http_status_code = 200
+            else:
+                result = create_s3_bucket(
+                    self.bucket, settings.AWS_ACCESS_KEY, 
+                    settings.AWS_SECRET_KEY)
+    
+                if result:
+                    _error = result.get('error')
+                    if _error:
+                        self.s3_error = _error
+                        self.status = 'Failed'
+                        self.http_status_code = result.get('http_status_code', 99)
+                    else:
+                        self.status = 'Success'
+                        self.location = result.get('Location', '')
+                        self.http_status_code = result.get('ResponseMetadata', {}).get('HTTPStatusCode', 98)
+                        self.response_string = str(result)
 
         except Exception as e:
             logger.error('Save Exception: {}'.format(e))
 
-
-        
         super(CreateBucket, self).save(*args, **kwargs)
 
 

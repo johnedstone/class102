@@ -139,7 +139,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-    )
+    ),
+    # Not using IsAuthenticated because it blocks Swagger
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #    'rest_framework.permissions.IsAuthenticated',
+    #],
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -165,11 +169,13 @@ AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'hocospocus')
 HTTP_PROXY = os.getenv('HTTP_PROXY')
 HTTPS_PROXY = os.getenv('HTTPS_PROXY')
 
-# For v.11
+# For v0.11
 # Enabled Templages, and other settings above, plus
 SWAGGER_SETTINGS = {
     'VALIDATOR_URL': None,
     'USE_SESSION_AUTH': False,
     'SECURITY_DEFINITIONS': {},
 }
+
+
 # vi: ai et ts=4 sts=4 sw=4 nu ru

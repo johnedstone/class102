@@ -28,17 +28,20 @@ class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CreateBucket
         fields = [
-            'url',
-            'created',
-            'modified',
-            'change',
             'bucket',
+            'change',
+            'created',
+            'dry_run',
             'http_status_code',
             'location',
+            'modified',
+            'response_string',
             's3_error',
-            'status'
+            'status',
+            'url',
+            'username',
             ]
-        read_only_fields = [field for field in fields if field not in ['change', 'bucket']]
+        read_only_fields = [field for field in fields if field not in ['change', 'bucket', 'dry_run']]
         required = ['change', 'bucket']
 
 # vim: ai et ts=4 sw=4 sts=4 ru nu 
