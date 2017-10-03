@@ -420,11 +420,37 @@ pip freeze | egrep -i swagger | tee -a requirements.txt
 
 ```
 
+### Tag v0.15
+* Changes: adjusted logging so it can be 'turned on' in Openshift by env var
+* Catching 'existing bucket' a little more clearly
+* Adjust bucket success messaging so that it can be controlled from Openshift env var
+* reduced output for user (now look in logging if more info is needed)
+* update modified files, then
+
+```
+rm db.sqlite3
+rm aws_bucket_app/migrations/000xxxx
+python manage.py makemigrations
+python manage.py migrate
+```
+
+* files changed:
+```
+#       modified:   aws_bucket_app/bucket.py
+#       modified:   aws_bucket_app/models.py
+#       modified:   aws_bucket_app/serializers.py
+#       modified:   aws_bucket_app/views.py
+#       modified:   restapi_project/settings.py
+#       modified:   typical_aws_keys.sh
+#       modified:   typical_aws_keys_openshift.parm
+```
+
 ### Next
 * write management tool for setting token
 * Write Openshift template
 
 ### To Do:
+* Consider using AWS Lambda
 * Write Openshift Template
 * Include superuser and uses with token in Openshift `run` script, something like this
 ```
@@ -452,4 +478,3 @@ pip freeze | egrep -i swagger | tee -a requirements.txt
 >>> u.auth_token
 <Token: cf00edd60753f7608007>
 ```
-* Consider using AWS Lambda

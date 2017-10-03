@@ -15,7 +15,7 @@ from rest_framework.authtoken.models import Token
 
 from .bucket import create_s3_bucket
 
-logger = logging.getLogger('verbose_logging')
+logger = logging.getLogger('project_logging')
 
 # @python_2_unicode_compatible
 class RainbowColor(models.Model):
@@ -63,7 +63,7 @@ class CreateBucket(models.Model):
     dry_run = models.BooleanField(default=True, blank=True)
     http_status_code =  models.IntegerField(default=0, blank=True)
     location = models.CharField(max_length=50, default='', blank=True)
-    new_bucket = models.BooleanField(default=True, blank=True)
+    new_bucket = models.CharField(max_length=10, default='unknown', blank=True)
     request_created =  models.DateTimeField(auto_now_add=True)
     request_modified = models.DateTimeField(auto_now=True)
     response_string = models.CharField(max_length=255, default='', blank=True)
@@ -89,20 +89,31 @@ class CreateBucket(models.Model):
                 result = create_s3_bucket(
                     self.bucket, settings.AWS_ACCESS_KEY, 
                     settings.AWS_SECRET_KEY)
+
     
                 if result:
-                    _error = result.get('error')
                     self.bucket_creation_date = result.get('bucket_creation_date', '')
-                    self.new_bucket = result.get('new_bucket', True)
+                    self.new_bucket = result.get('new_bucket', 'unknown')
+
+                    _error = result.get('error')
+
                     if _error:
                         self.s3_error = _error
                         self.status = 'Failed'
                         self.http_status_code = result.get('http_status_code', 99)
                     else:
-                        self.status = 'Success'
+                        if self.new_bucket == 'yes':
+                            self.status = settings.SUCCESS_MSG_NEW_BUCKET
+                        elif self.new_bucket == 'no':
+                            self.status = settings.SUCCESS_MSG_PREEXISTING_BUCKET
+                        else:
+                            self.status = 'unknown'
+
                         self.location = result.get('Location', '')
                         self.http_status_code = result.get('ResponseMetadata', {}).get('HTTPStatusCode', 98)
                         self.response_string = str(result)
+                else:
+                    self.status = settings.AWS_NO_RESPONSE
 
         except Exception as e:
             logger.error('Save Exception: {}'.format(e))

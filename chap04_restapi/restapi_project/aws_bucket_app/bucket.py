@@ -14,7 +14,7 @@ import logging
 
 from botocore.vendored.requests.exceptions import ConnectionError
 
-logger = logging.getLogger('verbose_logging')
+logger = logging.getLogger('project_logging')
 
 NY_TIMEZONE = tz.gettz('America/New_York')
 
@@ -53,13 +53,16 @@ def create_s3_bucket(bucket, access_key, secret_key):
 
 
         try:
+            logger.info('Entering existing bucket try')
             response = s3.meta.client.head_bucket(Bucket=bucket)
             bucket_obj = s3.Bucket(bucket)
             response['bucket_creation_date'] = '{}'.format(
                 bucket_obj.creation_date.astimezone(tz=NY_TIMEZONE))
-            response['new_bucket'] = False
+            response['new_bucket'] = 'no'
 
         except botocore.exceptions.ClientError as e:
+            logger.info('Entering new bucket create')
+            logger.error(e)
             error_code = int(e.response['Error']['Code'])
             if error_code == 404:
                 new_bucket = s3.create_bucket(Bucket=bucket)
@@ -67,15 +70,18 @@ def create_s3_bucket(bucket, access_key, secret_key):
                 response = s3.meta.client.head_bucket(Bucket=bucket)
                 response['bucket_creation_date'] = '{}'.format(
                      new_bucket.creation_date.astimezone(tz=NY_TIMEZONE))
-                response['new_bucket'] = True
-
+                response['new_bucket'] = 'yes'
+            if error_code == 403:
+                response = {'error': e}
+        except:
+            raise
 
     except ConnectionError as e:
         logger.error('Connection Error: {}'.format(e))
         response = {'error': e}
 
     except Exception as e:
-        logger.error('Exception: {}'.format(e))
+        logger.error('Bucket exception: {}'.format(e))
         response = {'error': e}
 
     logger.info(response)

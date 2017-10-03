@@ -100,10 +100,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-if DEBUG:
-  project_logging_level = 'INFO'
-else:
-  project_logging_level = 'WARNING'
+# For Production set OS ENV PROJECT_LOGGING_LEVEL=WARNING
+PROJECT_LOGGING_LEVEL = os.getenv('PROJECT_LOGGING_LEVEL', 'INFO')
 
 LOGGING = {
     'version': 1,
@@ -120,16 +118,16 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': project_logging_level,
+            'level': PROJECT_LOGGING_LEVEL,
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
     },
     'loggers': {
-        'verbose_logging': {
+        'project_logging': {
             'handlers': ['console',],
-            'level': project_logging_level,
+            'level': PROJECT_LOGGING_LEVEL,
             'filters': ['require_debug_true']
         }
     }
@@ -177,5 +175,9 @@ SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {},
 }
 
+# Status messaging
+SUCCESS_MSG_NEW_BUCKET = os.getenv('SUCCESS_MSG_NEW_BUCKET', 'New bucket created')
+SUCCESS_MSG_PREEXISTING_BUCKET = os.getenv('SUCCESS_MSG_PREEXISTING_BUCKET', 'Bucket already exists')
+AWS_NO_RESPONSE = os.getenv('AWS_NO_RESPONSE', 'AWS response is empty')
 
 # vi: ai et ts=4 sts=4 sw=4 nu ru

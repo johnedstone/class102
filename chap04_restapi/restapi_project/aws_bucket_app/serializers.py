@@ -37,7 +37,7 @@ class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
             'location',
             'new_bucket',
             'request_created',
-            'response_string',
+            # 'response_string',
             's3_error',
             'status',
             'url',

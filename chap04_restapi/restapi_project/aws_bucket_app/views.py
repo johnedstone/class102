@@ -11,7 +11,7 @@ from .models import RainbowColor, DogBreed, CreateBucket
 from .serializers import (RainbowColorSerializer,
     DogBreedSerializer, CreateBucketSerializer)
 
-logger = logging.getLogger('verbose_logging')
+logger = logging.getLogger('project_logging')
 
 class RainbowColorViewSet(viewsets.ModelViewSet):
     queryset = RainbowColor.objects.all()
