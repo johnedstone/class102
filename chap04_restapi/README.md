@@ -445,9 +445,9 @@ python manage.py migrate
 #       modified:   typical_aws_keys_openshift.parm
 ```
 
-### Next
+### Tag v0.16 - in progress
 * write management tool for setting token
-* Write Openshift template
+* Write Openshift template and deploy
 
 ### To Do:
 * Consider using AWS Lambda

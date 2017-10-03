@@ -10,9 +10,12 @@ SUPERUSER_PASSWORD=
 SUPERUSER_TOKEN=
 
 # Setting client_id and token in "run" script so as not to rely on persistant database
-# client_id your discretion, used as username
-# generate token: python -c "import binascii, os;binascii;print(binascii.hexlify(os.urandom(10)).decode())"
-# Usage: curl -X [ POST | GET ] -H "Authorization: Token token"
+#     i.e. you will always 'know' this and can give to your clients
+# The client_id is created at your discretion and is used as username
+# The Token can be generated as follows:
+#     python -c "import binascii, os;binascii;print(binascii.hexlify(os.urandom(10)).decode())"
+# How to use the token:
+#     curl -vs -X [POST|GET] --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Token a75e533453898571503363346eda985e709b080b'
 USERS='client_id|token, client_id2|token2'
 
 # Optional
