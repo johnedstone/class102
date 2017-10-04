@@ -16,7 +16,7 @@ SUPERUSER_TOKEN=
 #     python -c "import binascii, os;binascii;print(binascii.hexlify(os.urandom(10)).decode())"
 # How to use the token:
 #     curl -vs -X [POST|GET] --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Token a75e533453898571503363346eda985e709b080b'
-USERS='client_id|token, client_id2|token2'
+USERS='client_id|token client_id2|token2'
 
 # Optional
 DEBUG=

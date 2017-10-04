@@ -1,0 +1,205 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: aws-s3-create
+  annotations:
+    description: User interface to communicate with restapi, using OIDC to authenticate
+    tags: aws-s3-create,python,django,oidc
+    iconClass: icon-python
+labels:
+  template: aws-s3-create
+objects:
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${NAME}
+    annotations:
+      description: Exposes and load balances the application pods
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: ${NAME}
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${NAME}
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    to:
+      kind: Service
+      name: ${NAME}
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${NAME}
+    annotations:
+      description: Keeps track of changes in the application image
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ${NAME}
+    annotations:
+      description: Defines how to build the application
+  spec:
+    source:
+      type: Git
+      git:
+        uri: ${SOURCE_REPOSITORY_URL}
+        ref: ${SOURCE_REPOSITORY_REF}
+      sourceSecret:
+        name: ${GITHUB_WEBHOOK_SECRET}
+      contextDir: ${CONTEXT_DIR}
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: ${NAMESPACE}
+          name: python:3.5
+        env:
+        - name: PIP_PROXY
+          value: ${PIP_PROXY}
+        - name: PIP_INDEX_URL
+          value: ${PIP_INDEX_URL}
+        - name: UPGRADE_PIP_TO_LATEST
+          value: ${UPGRADE_PIP_TO_LATEST}
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:latest
+    triggers:
+    - type: ImageChange
+    - type: ConfigChange
+    - type: GitHub
+      github:
+        secret: ${GITHUB_WEBHOOK_SECRET}
+    postCommit:
+      script: './manage.py test'
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: ${NAME}
+    annotations:
+      description: Defines how to deploy the application server
+  spec:
+    strategy:
+      type: Rolling
+    triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - aws-s3-create
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}:latest
+    - type: ConfigChange
+    replicas: 1
+    selector:
+      name: ${NAME}
+    template:
+      metadata:
+        name: ${NAME}
+        labels:
+          name: ${NAME}
+      spec:
+        containers:
+        - name: aws-s3-create
+          image: ' '
+          ports:
+          - containerPort: 8080
+          readinessProbe:
+            timeoutSeconds: 3
+            initialDelaySeconds: 3
+            httpGet:
+              path: /health/
+              port: 8080
+          livenessProbe:
+            timeoutSeconds: 3
+            initialDelaySeconds: 30
+            httpGet:
+              path: /liveness/
+              port: 8080
+          env:
+          - name: APP_CONFIG
+            value: ${APP_CONFIG}
+          - name: DEBUG
+            value: ${DEBUG}
+          - name: ALLOWED_HOSTS
+            value: ${ALLOWED_HOSTS}
+          - name: SECRET_KEY
+            value: ${SECRET_KEY}
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+parameters:
+- name: NAME
+  displayName: Name
+  description: The name assigned to all of the frontend objects defined in this template.
+  required: true
+  value: aws-s3-create
+- name: NAMESPACE
+  displayName: Namespace
+  required: true
+  description: The OpenShift Namespace where the ImageStream resides.
+  value: openshift
+- name: MEMORY_LIMIT
+  displayName: Memory limit
+  description: Maximum amount of memory the container can use
+  value: 512Mi
+- name: SOURCE_REPOSITORY_URL
+  displayName: Source repository URL
+  description: The URL of the repository with your application source code
+  value: https://github.com/johnedstone/class102.git
+- name: SOURCE_REPOSITORY_REF
+  displayName: Source repository reference
+  description: Set this to a branch name, tag or other ref of your repository if you
+    are not using the default branch
+- name: CONTEXT_DIR
+  displayName: Context directory
+  description: Set this to the relative path to your project if it is not in the root
+    of your repository
+  value: chap04_restapi/restapi_project
+- name: APPLICATION_DOMAIN
+  displayName: Application hostname
+  description: The exposed hostname that will route to the Django service, if left
+    blank a value will be defaulted.
+- name: GITHUB_WEBHOOK_SECRET
+  displayName: GitHub webhook secret
+  description: A secret string used to configure the GitHub webhook
+  value: sshsecret
+- name: PIP_PROXY
+  displayName: PIP PROXY
+  description: PIP environment variable for proxy
+- name: PIP_INDEX_URL
+  displayName: PIP INDEX URL
+  description: PIP Index URL, as origin/openshift is having trouble getting files, 
+    though a webserver has no trouble pulling these.
+- name: APP_CONFIG
+  displayName: Application configuration file path
+  description: Relative path to Gunicorn configuration file (optional)
+- name: DEBUG
+  displayName: Django Debug settings variable
+  description: Django Debug settings variable. If left unset it will be True
+  value: 'off'
+- name: SECRET_KEY
+  displayName: Djange secret key
+  description: Set this to a long random string
+  generate: expression
+  from: '[\w]{50}'
+- name: ALLOWED_HOSTS
+  displayName: Allowed Hosts
+  description: Allowed host - django setting
+  value: '*'
+- name: UPGRADE_PIP_TO_LATEST
+  displayName: Upgrade pip to the latest
+  description: Upgrade pip to the latest
+  value: 'yes' 
+
+# vim: ai et ts=2 sts=2 sw=2 nu

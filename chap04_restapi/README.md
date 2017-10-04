@@ -25,6 +25,59 @@ http  https://promotion-restapi.fqdn/api/deployconfigs/ "Authorization: Token <t
 http  https://promotion-restapi.fqdn/api/promotions/ "Authorization: Token <token>"
 ```
 
+### Quick curl example
+Curl example
+```
+
+curl -vs --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Token aaae533453898571503363346eda985e709b080b' -d '{"bucket":"johnedstone-Oct-04-01", "change":"change", "dry_run": false}' http://127.0.0.1:8000/api/create-bucket/ | python -m json.tool
+
+{
+    "bucket": "johnedstone-Oct-04-01",
+    "bucket_creation_date": "2017-10-04 11:58:05-04:00",
+    "change": "change",
+    "client_id_display": "boohoo",
+    "dry_run": false,
+    "http_status_code": 200,
+    "location": "",
+    "new_bucket": "no",
+    "request_created": "2017-10-04T16:00:51.526802Z",
+    "s3_error": "",
+    "status": "Bucket already exists",
+    "url": "http://127.0.0.1:8000/api/create-bucket/29/"
+}
+
+```
+
+Which is equivilant to python's HTTPie
+
+```
+http http://127.0.0.1:8000/api/create-bucket/ "Authorization: Token aaae533453898571503363346eda985e709b080b" bucket="johnedstone-Oct-04-01" change="change" dry_run=false
+HTTP/1.0 201 Created
+Allow: GET, HEAD, OPTIONS, POST
+Content-Length: 350
+Content-Type: application/json
+Date: Wed, 04 Oct 2017 16:04:55 GMT
+Location: http://127.0.0.1:8000/api/create-bucket/30/
+Server: WSGIServer/0.2 CPython/3.5.1
+X-Frame-Options: SAMEORIGIN
+
+{
+    "bucket": "johnedstone-Oct-04-01",
+    "bucket_creation_date": "2017-10-04 11:58:05-04:00",
+    "change": "change",
+    "client_id_display": "boohoo",
+    "dry_run": false,
+    "http_status_code": 200,
+    "location": "",
+    "new_bucket": "no",
+    "request_created": "2017-10-04T16:04:55.824678Z",
+    "s3_error": "",
+    "status": "Bucket already exists",
+    "url": "http://127.0.0.1:8000/api/create-bucket/30/"
+}
+
+```
+
 ### References
 * http://www.django-rest-framework.org/
 * http://www.cdrf.co/

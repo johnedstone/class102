@@ -112,6 +112,7 @@ class CreateBucket(models.Model):
                         self.location = result.get('Location', '')
                         self.http_status_code = result.get('ResponseMetadata', {}).get('HTTPStatusCode', 98)
                         self.response_string = str(result)
+                        logger.info('response_string: {}'.format(self.response_string))
                 else:
                     self.status = settings.AWS_NO_RESPONSE
 
