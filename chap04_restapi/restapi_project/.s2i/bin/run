@@ -73,10 +73,10 @@ python "$manage_file" shell -c "from django.contrib.auth.models import User;impo
 python "$manage_file" set_client_token ${SUPERUSER_USERNAME} ${SUPERUSER_TOKEN}
 
 ## Set token for other users
-#for ea in ${USERS[@]}; do
-#    u=(${ea//|/ })
-#    python "$manage_file" set_client_token $u[0] $u[1]
-#done
+for ea in ${USERS[@]}; do
+    u=(${ea//|/ })
+    python "$manage_file" set_client_token ${u[0]} ${u[1]}
+done
  
 if is_gunicorn_installed; then
   if [[ -z "$APP_MODULE" ]]; then
