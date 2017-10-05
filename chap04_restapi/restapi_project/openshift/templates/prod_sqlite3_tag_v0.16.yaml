@@ -142,6 +142,7 @@ parameters:
   displayName: Source repository reference
   description: Set this to a branch name, tag or other ref of your repository if you
     are not using the default branch
+  value: v0.16
 - name: CONTEXT_DIR
   displayName: Context directory
   description: Set this to the relative path to your project if it is not in the root
