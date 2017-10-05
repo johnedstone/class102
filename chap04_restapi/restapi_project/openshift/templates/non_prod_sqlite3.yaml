@@ -145,6 +145,10 @@ objects:
             value: ${HTTP_PROXY}
           - name: SUCCESS_MSG_NEW_BUCKET
             value: ${SUCCESS_MSG_NEW_BUCKET}
+          - name: SUCCESS_MSG_PREEXISTING_BUCKET
+            value: ${SUCCESS_MSG_PREEXISTING_BUCKET}
+          - name: AWS_NO_RESPONSE
+            value: ${AWS_NO_RESPONSE}
           - name: SUPERUSER_USERNAME
             value: ${SUPERUSER_USERNAME}
           - name: SUPERUSER_PASSWORD
@@ -234,6 +238,15 @@ parameters:
 - name: SUCCESS_MSG_NEW_BUCKET
   displayName: SUCCESS MSG NEW BUCKET
   description: Success msg new bucket
+  value: 'New bucket created'
+- name: SUCCESS_MSG_PREEXISTING_BUCKET
+  displayName: SUCCESS MSG PREEXISTING BUCKET
+  description: Success Msg Preexisting Bucket
+  value: 'Bucket already exists'
+- name: AWS_NO_RESPONSE
+  displayName: AWS NO RESPONSE
+  description: AWS No Response
+  value: 'AWS response is empty'
 - name: SUPERUSER_USERNAME
   displayName: SUPERUSER USERNAME
   description: Superuser username

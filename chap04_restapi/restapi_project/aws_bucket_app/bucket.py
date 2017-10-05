@@ -44,7 +44,7 @@ def create_s3_bucket(bucket, access_key, secret_key):
         # http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.ServiceResource.create_bucket
         # http://boto3.readthedocs.io/en/latest/guide/migrations3.html#creating-the-connection 
         # http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.ServiceResource.buckets
-        # http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.ServiceResource.create_bucketjjjjkku
+        # http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.ServiceResource.create_bucket
 
         s3 = boto3.resource(
             's3',
