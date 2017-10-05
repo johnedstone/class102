@@ -68,10 +68,15 @@ if should_migrate; then
 fi
 
 ## Create superuser
-python "$manage_file" shell -c "from django.contrib.auth.models import User;import os;P=os.getenv('SUPERUSER_PASSWORD', 'hocuspocus');u=User();u.username='boohoo';u.set_password(P);u.is_staff=True;u.is_superuser=True;u.full_clean();u.save()"
+python "$manage_file" shell -c "from django.contrib.auth.models import User;import os;u=User();u.username=os.getenv('SUPERUSER_USERNAME', 'holycow');u.set_password(os.getenv('SUPERUSER_PASSWORD','giberish'));u.is_staff=True;u.is_superuser=True;u.full_clean();u.save()"
+### Set superuser token
+python "$manage_file" set_client_token ${SUPERUSER_USERNAME} ${SUPERUSER_TOKEN}
 
-## Set token
-python "$manage_file" set_client_token boohoo 6202f93d17898cdf878b
+## Set token for other users
+for ea in ${USERS[@]}; do
+    u=(${ea//|/ })
+    python "$manage_file" set_client_token $u[0] $u[1]
+done
  
 if is_gunicorn_installed; then
   if [[ -z "$APP_MODULE" ]]; then

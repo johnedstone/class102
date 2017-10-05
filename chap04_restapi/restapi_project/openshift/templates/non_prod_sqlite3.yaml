@@ -118,7 +118,7 @@ objects:
             timeoutSeconds: 3
             initialDelaySeconds: 3
             httpGet:
-              path: /health/
+              path: /readiness/
               port: 8080
           livenessProbe:
             timeoutSeconds: 3
@@ -135,6 +135,24 @@ objects:
             value: ${ALLOWED_HOSTS}
           - name: SECRET_KEY
             value: ${SECRET_KEY}
+          - name: AWS_ACCESS_KEY
+            value: ${AWS_ACCESS_KEY}
+          - name: AWS_SECRET_KEY
+            value: ${AWS_SECRET_KEY}
+          - name: HTTPS_PROXY
+            value: ${HTTPS_PROXY}
+          - name: HTTP_PROXY
+            value: ${HTTP_PROXY}
+          - name: SUCCESS_MSG_NEW_BUCKET
+            value: ${SUCCESS_MSG_NEW_BUCKET}
+          - name: SUPERUSER_USERNAME
+            value: ${SUPERUSER_USERNAME}
+          - name: SUPERUSER_PASSWORD
+            value: ${SUPERUSER_PASSWORD}
+          - name: SUPERUSER_TOKEN
+            value: ${SUPERUSER_TOKEN}
+          - name: USERS
+            value: ${USERS}
           resources:
             limits:
               memory: ${MEMORY_LIMIT}
@@ -201,5 +219,38 @@ parameters:
   displayName: Upgrade pip to the latest
   description: Upgrade pip to the latest
   value: 'yes' 
+- name: AWS_ACCESS_KEY
+  displayName: AWS ACCESS KEY
+  description: AWS access key
+- name: AWS_SECRET_KEY
+  displayName: AWS SECRET KEY
+  description: AWS secret key
+- name: HTTPS_PROXY
+  displayName: HTTPS PROXY
+  description: HTTPS Proxy for AWS config
+- name: HTTP_PROXY
+  displayName: HTTP PROXY
+  description: HTTP Proxy for AWS config
+- name: SUCCESS_MSG_NEW_BUCKET
+  displayName: SUCCESS MSG NEW BUCKET
+  description: Success msg new bucket
+- name: SUPERUSER_USERNAME
+  displayName: SUPERUSER USERNAME
+  description: Superuser username
+  value: someusername
+- name: SUPERUSER_PASSWORD
+  displayName: SUPERUSER PASSWORD
+  description: Superuser password
+  generate: expression
+  from: '[\w]{50}'
+- name: SUPERUSER_TOKEN
+  displayName: SUPERUSER TOKEN
+  description: Superuser Token
+  generate: expression
+  from: '[\w]{20}'
+- name: USERS
+  displayName: USERS
+  description: Users and token
+  value: 'client_id|token client_id_02|another_token'
 
 # vim: ai et ts=2 sts=2 sw=2 nu

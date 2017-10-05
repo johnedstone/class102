@@ -71,10 +71,10 @@ def create_s3_bucket(bucket, access_key, secret_key):
                 response['bucket_creation_date'] = '{}'.format(
                      new_bucket.creation_date.astimezone(tz=NY_TIMEZONE))
                 response['new_bucket'] = 'yes'
-            if error_code == 403:
+            elif error_code == 403:
                 response = {'error': e}
-        except:
-            raise
+            else:
+                raise
 
     except ConnectionError as e:
         logger.error('Connection Error: {}'.format(e))

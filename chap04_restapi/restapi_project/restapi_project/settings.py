@@ -21,16 +21,27 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
+
+    # Not needed as no UI is using this rest api
+    # 'corsheaders',
 
     # Internal apps
     'aws_bucket_app',
     'rest_framework_swagger',
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+]
+
+ENABLE_WHITENOISE = os.environ.get('ENABLE_WHITENOISE', 'on') == 'on' # Added for origin/openshift
+if ENABLE_WHITENOISE:
+    MIDDLEWARE_CLASSES.append('whitenoise.middleware.WhiteNoiseMiddleware')
+
+MIDDLEWARE_CLASSES += [
+    # Not needed as no UI is using this rest api
+    # 'corsheaders.middleware.CorsMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -144,7 +155,8 @@ REST_FRAMEWORK = {
     #],
 }
 
-CORS_ORIGIN_ALLOW_ALL = True
+# Not needed as no UI is using this rest api
+# CORS_ORIGIN_ALLOW_ALL = True
 
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
                'rest_framework.renderers.JSONRenderer',)
