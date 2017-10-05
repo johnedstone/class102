@@ -499,13 +499,26 @@ python manage.py migrate
 ```
 
 ### Tag v0.16
-* write management tool for setting token
+* Write management tool for setting token
 * Write Openshift template and deploy
-* added whitenoise so that swagger can be viewed in Openshift
+* Added whitenoise so that swagger can be viewed in Openshift - see `requirements.txt` and `settings.py`
 * Added several env variables
-* Files changed from previous tag:
+* Files changed between tag v0.15 and v0.16
 ```
-
+chap04_restapi/README.md
+chap04_restapi/restapi_project/.s2i/bin/run
+chap04_restapi/restapi_project/aws_bucket_app/bucket.py
+chap04_restapi/restapi_project/aws_bucket_app/management/__init__.py
+chap04_restapi/restapi_project/aws_bucket_app/management/commands/__init__.py
+chap04_restapi/restapi_project/aws_bucket_app/management/commands/set_client_token.py
+chap04_restapi/restapi_project/aws_bucket_app/migrations/0001_initial.py
+chap04_restapi/restapi_project/aws_bucket_app/models.py
+chap04_restapi/restapi_project/openshift/templates/non_prod_sqlite3.yaml
+chap04_restapi/restapi_project/openshift/templates/prod_sqlite3.yaml
+chap04_restapi/restapi_project/requirements.txt
+chap04_restapi/restapi_project/restapi_project/settings.py
+chap04_restapi/restapi_project/typical_aws_keys.sh
+chap04_restapi/restapi_project/typical_aws_keys_openshift.parm
 ```
 
 #### Deploy in Openshift
