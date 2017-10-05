@@ -498,36 +498,19 @@ python manage.py migrate
 #       modified:   typical_aws_keys_openshift.parm
 ```
 
-### Tag v0.16 - in progress
+### Tag v0.16
 * write management tool for setting token
 * Write Openshift template and deploy
+* added whitenoise so that swagger can be viewed in Openshift
+* Added several env variables
+* Files changed from previous tag:
+```
+
+```
+
+# Next
+* Start Chapter 5
+* start using postgresql json field, so that a dictionary of tags can be used
 
 ### To Do:
 * Consider using AWS Lambda
-* Write Openshift Template
-* Include superuser and uses with token in Openshift `run` script, something like this
-```
->>> from rest_framework.authtoken.models import Token
->>> from django.contrib.auth.models import User
->>> import os, binascii
->>> binascii.hexlify(os.urandom(10)).decode()
-'332b23fe41ea75c212f4'
->>> b = binascii.hexlify(os.urandom(10)).decode()
->>> u = User()
->>> u.username = 'HarryPotter'
->>> u.set_password(b)
->>> u.full_clean()
->>> u.save()
->>> u.auth_token
-<Token: dd89e5127f4974a526a6af0be7a5f79d0b99fc6a>
->>> t = u.auth_token
->>> t.key
-'dd89e5127f4974a526a6af0be7a5f79d0b99fc6a'
->>> t.delete()
-(1, {'authtoken.Token': 1})
->>> t = Token(user=u, key=b)
->>> t.full_clean()
->>> t.save()
->>> u.auth_token
-<Token: cf00edd60753f7608007>
-```
