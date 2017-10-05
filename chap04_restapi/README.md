@@ -508,6 +508,24 @@ python manage.py migrate
 
 ```
 
+#### Deploy in Openshift
+* First ...
+```
+oc new-project project-name
+oc secrets new-sshauth sshsecret --ssh-privatekey=/path/to/key/
+oc secret add serviceaccount/builder secrets/sshsecret
+```
+
+* Building ...
+```
+oc new-app --param-file aws_keys_openshift.parm -f openshift/templates/non_prod_sqlite3.yaml
+```
+
+* Or just deploying ...
+```
+oc new-app --param-file aws_keys_openshift.parm -f openshift/templates/prod_sqlite3.yaml
+```
+
 # Next
 * Start Chapter 5
 * start using postgresql json field, so that a dictionary of tags can be used
