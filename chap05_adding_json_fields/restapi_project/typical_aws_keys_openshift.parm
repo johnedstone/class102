@@ -1,0 +1,33 @@
+# Use this file for Openshift params file
+AWS_ACCESS_KEY='access_key'
+AWS_SECRET_KEY='secret_key'
+
+# AWS Config
+HTTPS_PROXY='https://ip:port'
+HTTP_PROXY='http://ip:port'
+
+PIP_PROXY=<ip:port>
+APPLICATION_DOMAIN=fqdn
+
+# Setting users and tokens in "run" script so as not to rely on persistant database
+SUPERUSER_USERNAME=someusername
+SUPERUSER_PASSWORD=somepassword
+SUPERUSER_TOKEN=somegeneratedtoken
+
+# Setting client_id and token in "run" script so as not to rely on persistant database
+#     i.e. you will always 'know' this and can give to your clients
+# The client_id is created at your discretion and is used as username
+# The Token can be generated as follows:
+#     python -c "import binascii, os;binascii;print(binascii.hexlify(os.urandom(10)).decode())"
+# How to use the token:
+#     curl -vs -X [POST|GET] --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Token a75e533453898571503363346eda985e709b080b'
+USERS='client_id|token client_id2|token2'
+
+## Optional
+# DEBUG=
+# ALLOWED_HOSTS=
+# SECRET_KEY=
+# SUCCESS_MSG_NEW_BUCKET=
+# SUCCESS_MSG_PREEXISTING_BUCKET=
+# AWS_NO_RESPONSE=
+# PROJECT_LOGGING_LEVEL= # WARNING|INFO
