@@ -1,5 +1,5 @@
 ### Purpose
-* Build on chapter 4
+* Chapter 5 builds on the ideas presented in chapter 4
 * Add json fields to allow json dictionaries for tags by clients
 * Start tagging at v5.00
 

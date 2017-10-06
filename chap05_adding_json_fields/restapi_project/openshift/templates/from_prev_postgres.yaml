@@ -1,0 +1,377 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: promotion-restapi
+message: |-
+    Templates presents REST API for promotions
+metadata:
+  annotations:
+    description: 'Promotion REST API'
+    tags: quickstart,python,django,restapi
+    iconClass: icon-python
+  name: promotion-restapi
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${NAME}
+  stringData:
+    databasePassword: ${DATABASE_PASSWORD}
+    databaseUser: ${DATABASE_USER}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    name: ${NAME}
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: ${NAME}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${NAME}
+    annotations:
+      haproxy.router.openshift.io/timeout: 300s
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    to:
+      kind: Service
+      name: ${NAME}
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    name: ${NAME}
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: Defines how to build the application
+    name: ${NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:latest
+    source:
+      contextDir: ${CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+      sourceSecret:
+        name: ${GITHUB_WEBHOOK_SECRET}
+    strategy:
+      sourceStrategy:
+        env:
+        - name: PIP_PROXY
+          value: ${PIP_PROXY}
+        - name: PIP_INDEX_URL
+          value: ${PIP_INDEX_URL}
+        - name: UPGRADE_PIP_TO_LATEST
+          value: ${UPGRADE_PIP_TO_LATEST}
+        from:
+          kind: ImageStreamTag
+          name: python:2.7
+          namespace: ${NAMESPACE}
+      type: Source
+    triggers:
+    - type: ImageChange
+    - type: ConfigChange
+    - github:
+        secret: ${GITHUB_WEBHOOK_SECRET}
+      type: GitHub
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+    name: ${NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${NAME}
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: ${NAME}
+        name: ${NAME}
+      spec:
+        containers:
+        - env:
+          - name: DATABASE_SERVICE_NAME
+            value: ${DATABASE_SERVICE_NAME}
+          - name: DATABASE_ENGINE
+            value: ${DATABASE_ENGINE}
+          - name: DATABASE_NAME
+            value: ${DATABASE_NAME}
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                key: databaseUser
+                name: ${NAME}
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: databasePassword
+                name: ${NAME}
+          - name: APP_CONFIG
+            value: ${APP_CONFIG}
+          - name: DJANGO_SECRET_KEY
+            value: ${DJANGO_SECRET_KEY}
+          - name: ALLOWED_HOSTS
+            value: ${ALLOWED_HOSTS}
+          - name: DEBUG
+            value: ${DEBUG}
+          - name: OPENSHIFT_MASTER_POC
+            value: ${OPENSHIFT_MASTER_POC}
+          - name: OPENSHIFT_MASTER_NP
+            value: ${OPENSHIFT_MASTER_NP}
+          - name: OPENSHIFT_MASTER_PRD
+            value: ${OPENSHIFT_MASTER_PRD}
+          - name: PROMOTION_HOST_KEY
+            value: ${PROMOTION_HOST_KEY}
+          - name: PROMOTION_USERNAME
+            value: ${PROMOTION_USERNAME}
+          - name: PROMOTION_PASSWORD
+            value: ${PROMOTION_PASSWORD}
+          image: ' '
+          livenessProbe:
+            httpGet:
+              path: /liveness/
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+          name: promotion-restapi
+          ports:
+          - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /readiness/
+              port: 8080
+            initialDelaySeconds: 3
+            timeoutSeconds: 3
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - promotion-restapi
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}:latest
+      type: ImageChange
+    - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes the database server
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the database
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+        name: ${DATABASE_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: databaseUser
+                name: ${NAME}
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: databasePassword
+                name: ${NAME}
+          - name: POSTGRESQL_DATABASE
+            value: ${DATABASE_NAME}
+          image: ' '
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 5432
+            timeoutSeconds: 1
+          name: postgresql
+          ports:
+          - containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - psql -h 127.0.0.1 -U ${POSTGRESQL_USER} -q -d ${POSTGRESQL_DATABASE}
+                -c 'SELECT 1'
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: ${MEMORY_POSTGRESQL_LIMIT}
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: data
+        volumes:
+        - emptyDir: {}
+          name: data
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - postgresql
+        from:
+          kind: ImageStreamTag
+          name: postgresql:9.5
+          namespace: ${NAMESPACE}
+      type: ImageChange
+    - type: ConfigChange
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: promotion-restapi
+- description: The OpenShift Namespace where the ImageStream resides.
+  displayName: Namespace
+  name: NAMESPACE
+  required: true
+  value: openshift
+- description: Maximum amount of memory the Django container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: The URL of the repository with your application source code.
+  displayName: Git Repository URL
+  name: SOURCE_REPOSITORY_URL
+  required: true
+- description: Set this to a branch name, tag or other ref of your repository if you
+    are not using the default branch.
+  displayName: Git Reference
+  name: SOURCE_REPOSITORY_REF
+- description: Set this to the relative path to your project if it is not in the root
+    of your repository.
+  displayName: Context Directory
+  name: CONTEXT_DIR
+  value: 'rest_api/promotion_api/promotion_project'
+- description: The exposed hostname that will route to the Django service, if left
+    blank a value will be defaulted.
+  displayName: Application Hostname
+  name: APPLICATION_DOMAIN
+- description: A secret string used to configure the GitHub webhook.
+  displayName: GitHub Webhook Secret
+  value: sshsecret
+  name: GITHUB_WEBHOOK_SECRET
+- description: Relative path to Gunicorn configuration file (optional).
+  displayName: Application Configuration File Path
+  name: APP_CONFIG
+- description: Set this to a long random string.
+  displayName: Django Secret Key
+  from: '[\w]{50}'
+  generate: expression
+  name: DJANGO_SECRET_KEY
+- description: The custom PyPi index URL
+  displayName: Custom PyPi Index URL
+  name: PIP_INDEX_URL
+- name: PIP_PROXY
+  displayName: PIP PROXY
+  description: PIP environment variable for proxy
+  value: '40.0.40.10:9000'
+- name: DEBUG
+  displayName: Django Debug settings variable
+  description: Django Debug settings variable. If left unset it will be off (False)
+  value: 'off'
+- description: Allowed Host for Django Setting
+  name: ALLOWED_HOSTS
+  displayName: Allowed Hosts
+  value: '*'
+- description: Upgrade pip to the latest
+  name: UPGRADE_PIP_TO_LATEST
+  displayName: Upgrade pip to latest
+  value: 'any_value_example_yes'
+- name: OPENSHIFT_MASTER_POC
+  description: The OpenShift POC master hostname and port
+  displayName: OpenShift POC master hostname and port
+  required: true
+- name: OPENSHIFT_MASTER_NP
+  displayName: OpenShift NP master hostname and port
+  description: The OpenShift NP master hostname and port
+  required: true
+- name: OPENSHIFT_MASTER_PRD
+  displayName: OpenShift PRD master hostname and port
+  description: The OpenShift PRD master hostname and port
+  required: true
+- name: PROMOTION_HOST_KEY
+  displayName: "Promotion Host Key, i.e which cgi-bin host: POC, NP, PRD"
+  description: "Promotion host key, i.e which cgi-bin host: POC, NP, PRD"
+  required: true
+- name: PROMOTION_USERNAME
+  displayName: Promotion Host USERNAME
+  description: Promotion host password
+  required: true
+- name: PROMOTION_PASSWORD
+  displayName: Promotion Host PASSWORD
+  description: Promotion host password
+  required: true
+- description: Maximum amount of memory the PostgreSQL container can use.
+  displayName: Memory Limit (PostgreSQL)
+  name: MEMORY_POSTGRESQL_LIMIT
+  required: true
+  value: 512Mi
+- displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: postgresql
+- description: 'Database engine: postgresql, mysql or sqlite (default).'
+  displayName: Database Engine
+  name: DATABASE_ENGINE
+  required: true
+  value: postgresql
+- displayName: Database Name
+  name: DATABASE_NAME
+  required: true
+  value: default
+- displayName: Database Username
+  name: DATABASE_USER
+  required: true
+  value: django
+- displayName: Database User Password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: DATABASE_PASSWORD
+
+# vim: ai et ts=2 sts=2 sw=2 nu

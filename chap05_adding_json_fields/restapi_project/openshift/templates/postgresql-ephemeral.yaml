@@ -30,7 +30,7 @@ metadata:
     template.openshift.io/support-url: https://access.redhat.com
   creationTimestamp: 2016-03-21T19:38:17Z
   name: postgresql-ephemeral
-  namespace: openshift
+  # namespace: openshift # error
   resourceVersion: "100346297"
   selfLink: /oapi/v1/namespaces/openshift/templates/postgresql-ephemeral
   uid: 75859ba2-ef9c-11e5-9fae-005056be7c55
