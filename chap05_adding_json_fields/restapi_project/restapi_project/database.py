@@ -28,8 +28,8 @@ def config():
         'NAME': name,
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('{}_SERVICE_HOST'.format(service_name)),
-        'PORT': os.getenv('{}_SERVICE_PORT'.format(service_name)),
+        'HOST': os.getenv('{}_SERVICE_HOST'.format(service_name), '127.0.0.1'),
+        'PORT': os.getenv('{}_SERVICE_PORT'.format(service_name), '5432'),
     }
 
 # vim: ai et ts=4 sts=4 sw=4 nu ru
