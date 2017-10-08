@@ -142,6 +142,36 @@ X-Frame-Options: SAMEORIGIN
                 "type": "boolean"
 ...........
 ```
+#### Example response
+```
+http http://127.0.0.1:8000/api/create-bucket/ "Authorization: Token boohoowoohoo" bucket="johnedstone-sat-15" change="CHXxxxx" dry_run=false location_constraint='us-west-1' acl='public-read'
+
+HTTP/1.0 201 Created
+Allow: GET, HEAD, OPTIONS, POST
+Content-Length: 433
+Content-Type: application/json
+Date: Sun, 08 Oct 2017 05:36:16 GMT
+Location: http://127.0.0.1:8000/api/create-bucket/2/
+Server: WSGIServer/0.2 CPython/3.5.1
+X-Frame-Options: SAMEORIGIN
+
+{
+    "acl": "public-read",
+    "amz_bucket_region": "us-west-1",
+    "bucket": "johnedstone-sat-15",
+    "bucket_creation_date": "2017-10-08 01:36:15-04:00",
+    "change": "CHXxxxx",
+    "client_id_display": "boohoo",
+    "dry_run": false,
+    "http_status_code": "200",
+    "location": "",
+    "location_constraint": "us-west-1",
+    "new_bucket": "yes",
+    "request_created": "2017-10-08T05:36:16.044080Z",
+    "s3_error": "",
+    "status": "New bucket created",
+    "url": "http://127.0.0.1:8000/api/create-bucket/2/"
+```
 
 ### Tag v5.02 in progress
-* Add tagging
+* Add tagging http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.BucketTagging
