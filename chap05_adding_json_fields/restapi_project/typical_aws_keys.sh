@@ -1,13 +1,13 @@
 # Source this file  for Env Vars, e.g. local devlopment, sever deployment, etc
 unset AWS_ACCESS_KEY
 unset AWS_SECRET_KEY
-unset HTTPS_PROXY
-unset HTTP_PROXY
+unset AWS_HTTPS_PROXY
+unset AWS_HTTP_PROXY
 
 export AWS_ACCESS_KEY='access_key'
 export AWS_SECRET_KEY='secret_key'
-export HTTPS_PROXY='https://ip:port'
-export HTTP_PROXY='http://ip:port'
+export AWS_HTTPS_PROXY='https://ip:port'
+export AWS_HTTP_PROXY='http://ip:port'
 
 # Postgresql local development, not needed for openshift template
 unset DATABASE_SERVICE_NAME

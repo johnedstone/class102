@@ -170,9 +170,9 @@ AUTHENTICATION_BACKENDS = (
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', 'hocospocus')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'hocospocus')
 
-# For v0.9
-HTTP_PROXY = os.getenv('HTTP_PROXY')
-HTTPS_PROXY = os.getenv('HTTPS_PROXY')
+# For v0.9, updated v5.01
+AWS_HTTP_PROXY = os.getenv('AWS_HTTP_PROXY')
+AWS_HTTPS_PROXY = os.getenv('AWS_HTTPS_PROXY')
 
 # For v0.11
 # Enabled Templages, and other settings above, plus
@@ -187,4 +187,5 @@ SUCCESS_MSG_NEW_BUCKET = os.getenv('SUCCESS_MSG_NEW_BUCKET', 'New bucket created
 SUCCESS_MSG_PREEXISTING_BUCKET = os.getenv('SUCCESS_MSG_PREEXISTING_BUCKET', 'Bucket already exists')
 AWS_NO_RESPONSE = os.getenv('AWS_NO_RESPONSE', 'AWS response is empty')
 
+ACL_DEFAULT = os.getenv('ACL_DEFAULT', 'public-read')
 # vi: ai et ts=4 sts=4 sw=4 nu ru

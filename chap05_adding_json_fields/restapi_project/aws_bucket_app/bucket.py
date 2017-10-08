@@ -4,7 +4,7 @@ from django.conf import settings
 # https://stackoverflow.com/questions/33480108/how-do-you-use-an-http-https-proxy-with-boto3
 import botocore.endpoint
 def _get_proxies(self, url):
-    return {'http': settings.HTTP_PROXY, 'https': settings.HTTPS_PROXY}
+    return {'http': settings.AWS_HTTP_PROXY, 'https': settings.AWS_HTTPS_PROXY}
 
 botocore.endpoint.EndpointCreator._get_proxies = _get_proxies
 
@@ -18,23 +18,9 @@ logger = logging.getLogger('project_logging')
 
 NY_TIMEZONE = tz.gettz('America/New_York')
 
-def create_s3_bucket(bucket, access_key, secret_key):
-    """ Typical response
-
-    {'ResponseMetadata':
-        {'RequestId': '1C4B0BBDB5A4DE4C',
-         'HostId': 'IoS8NAfyHzgxqlE56Kw2pSCW1iNguFvlF0KCcU5VRmrCiIIfB71j5Oohpc0uyh3l/PWwYky5otM=',
-         'HTTPStatusCode': 200,
-         'HTTPHeaders':
-             {'x-amz-id-2': 'IoS8NAfyHzgxqlE56Kw2pSCW1iNguFvlF0KCcU5VRmrCiIIfB71j5Oohpc0uyh3l/PWwYky5otM=',
-              'x-amz-request-id': '1C4B0BBDB5A4DE4C',
-              'date': 'Fri, 29 Sep 2017 06:06:40 GMT',
-              'location': '/Thur-27-2017',
-              'content-length': '0',
-              'server': 'AmazonS3'},
-         'RetryAttempts': 0},
-         'Location': '/Thur-27-2017'}
-    """
+def create_s3_bucket(bucket, access_key, secret_key,
+    acl=settings.ACL_DEFAULT,
+    location_constraint=None):
 
     logger.info('Bucket:{}, AK: {}'.format(bucket,access_key))
 
@@ -65,7 +51,19 @@ def create_s3_bucket(bucket, access_key, secret_key):
             logger.error(e)
             error_code = int(e.response['Error']['Code'])
             if error_code == 404:
-                new_bucket = s3.create_bucket(Bucket=bucket)
+                if location_constraint:
+                    new_bucket = s3.create_bucket(
+                        Bucket=bucket,
+                        ACL=acl,
+                        CreateBucketConfiguration={
+                           "LocationConstraint": location_constraint
+                        }
+                    )
+                else:
+                    new_bucket = s3.create_bucket(
+                        Bucket=bucket,
+                        ACL=acl
+                    )
 
                 response = s3.meta.client.head_bucket(Bucket=bucket)
                 response['bucket_creation_date'] = '{}'.format(

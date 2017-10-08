@@ -3,12 +3,19 @@
 * Add json fields to allow json dictionaries for tags by clients
 * Start tagging at v5.01
 
-### Tag v5.01 in progress ..
+### Tag v5.01
 * Reduce models to just AWS S3 create bucket
 * Create new templates with v5.xx tagging
 * Added pip psycopg2
 * change str(response)field to json
 * Changed HTTP(S)_PROXY to AWS_HTTP(S)_Proxy 
+* Added ACL and LocationConstraint
+* Removed fields from model that can not be determined from s3_results JSONField
+
+#### Files changed from Chap4 to Tag v5.01
+```
+
+```
 
 #### Notes on running postgresql locally for development
 
@@ -27,10 +34,10 @@ oc new-app -p POSTGRESQL_USER=${DATABASE_USER} \
            -p POSTGRESQL_DATABASE=${DATABASE_NAME} \
            -f openshift/templates/postgresql-ephemeral.yaml
 
-# Open another window where HTTP(S)_PROXY is NOT set and do port-forwarding
+# If HTTP(S)_PROXY is set, open another window to do port-forwarding
 oc port-forward <pod> 5432
 
-# Now return to the first window and run these two commands
+# In the original window and run these two commands
 python manage.py migrate
 python manage.py runserver
 python manage.py set_client_token boohoo boohoowoohoo
@@ -41,4 +48,85 @@ python manage.py set_client_token boohoo boohoowoohoo
 oc delete all --all
 oc delete secrets postgresql
 
+# Examples using HTTPie
+http http://127.0.0.1:8000/api/
+http http://127.0.0.1:8000/api/create-bucket/ "Authorization: Token boohoowoohoo"
+
 ```
+
+#### Notes on requesting the `OPTIONS` on an endpoint with HTTPie (or curl)
+
+```
+http OPTIONS http://127.0.0.1:8000/api/create-bucket/
+[07/Oct/2017 22:49:55] "OPTIONS /api/create-bucket/ HTTP/1.1" 200 1573
+HTTP/1.0 200 OK
+Allow: GET, HEAD, OPTIONS, POST
+Content-Length: 1573
+Content-Type: application/json
+Date: Sun, 08 Oct 2017 02:49:55 GMT
+Server: WSGIServer/0.2 CPython/3.5.1
+X-Frame-Options: SAMEORIGIN
+
+{
+    "actions": {
+        "POST": {
+            "acl": {
+                "choices": [
+                    {
+                        "display_name": "private",
+                        "value": "private"
+                    },
+                    {
+                        "display_name": "public-read",
+                        "value": "public-read"
+                    },
+                    {
+                        "display_name": "public-read-write",
+                        "value": "public-read-write"
+                    },
+                    {
+                        "display_name": "authenticated-read",
+                        "value": "authenticated-read"
+                    }
+                ],
+                "label": "Acl",
+                "read_only": false,
+                "required": false,
+                "type": "choice"
+            },
+            "bucket": {
+                "label": "Bucket",
+                "max_length": 255,
+                "read_only": false,
+                "required": true,
+                "type": "string"
+            },
+            "bucket_creation_date": {
+                "label": "Bucket creation date",
+                "read_only": true,
+                "required": false,
+                "type": "string"
+            },
+            "change": {
+                "label": "Change",
+                "max_length": 25,
+                "read_only": false,
+                "required": true,
+                "type": "string"
+            },
+            "client_id_display": {
+                "label": "Client id display",
+                "read_only": true,
+                "required": false,
+                "type": "field"
+            },
+            "dry_run": {
+                "label": "Dry run",
+                "read_only": false,
+                "required": false,
+                "type": "boolean"
+...........
+```
+
+### Tag v5.02 in progress
+* Add tagging

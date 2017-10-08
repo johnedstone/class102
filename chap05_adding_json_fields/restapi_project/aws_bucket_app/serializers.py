@@ -10,6 +10,8 @@ class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CreateBucket
         fields = [
+            'acl',
+            'amz_bucket_region',
             'bucket',
             'bucket_creation_date',
             'change',
@@ -17,13 +19,22 @@ class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
             'dry_run',
             'http_status_code',
             'location',
+            'location_constraint',
             'new_bucket',
             'request_created',
+            # 's3_response',
             's3_error',
             'status',
             'url',
             ]
-        read_only_fields = [field for field in fields if field not in ['change', 'bucket', 'dry_run']]
+        read_only_fields = [field for field in fields if field not in [
+            'acl',
+            'bucket',
+            'change',
+            'dry_run',
+            'location_constraint',
+            ]
+        ]
         required = ['change', 'bucket']
 
 # vim: ai et ts=4 sw=4 sts=4 ru nu 
