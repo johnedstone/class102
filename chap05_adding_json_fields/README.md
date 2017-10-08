@@ -14,7 +14,22 @@
 
 #### Files changed from Chap4 to Tag v5.01
 ```
+chap03_models/chap3_project/chap3_app/templates/base.html
 
+chap05_adding_json_fields/README.md
+chap05_adding_json_fields/restapi_project/typical_aws_keys.sh
+chap05_adding_json_fields/restapi_project/typical_aws_keys_openshift.parm
+chap05_adding_json_fields/restapi_project/requirements.txt
+
+chap05_adding_json_fields/restapi_project/aws_bucket_app/bucket.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/migrations/0001_initial.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/models.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/serializers.py
+
+chap05_adding_json_fields/restapi_project/restapi_project/settings.py
+chap05_adding_json_fields/restapi_project/restapi_project/database.py
+
+chap05_adding_json_fields/restapi_project/openshift/templates/django-psql-ephemeral.yaml
 ```
 
 #### Notes on running postgresql locally for development
