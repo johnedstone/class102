@@ -174,4 +174,5 @@ X-Frame-Options: SAMEORIGIN
 ```
 
 ### Tag v5.02 in progress
+
 * Add tagging http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.BucketTagging
