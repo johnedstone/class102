@@ -8,6 +8,7 @@
 * Create new templates with v5.xx tagging
 * Added pip psycopg2
 * change str(response)field to json
+* Changed HTTP(S)_PROXY to AWS_HTTP(S)_Proxy 
 
 #### Notes on running postgresql locally for development
 
@@ -22,8 +23,8 @@ export DATABASE_PASSWORD=db_password
 
 # Create postgresql running instance with this command
 oc new-app -p POSTGRESQL_USER=${DATABASE_USER} \
-           -p POSTGRESQL_PASSWORD=${DATABASE_PASSWORD} 
-           -p POSTGRESQL_DATABASE=${DATABASE_NAME} 
+           -p POSTGRESQL_PASSWORD=${DATABASE_PASSWORD} \
+           -p POSTGRESQL_DATABASE=${DATABASE_NAME} \
            -f openshift/templates/postgresql-ephemeral.yaml
 
 # Open another window where HTTP(S)_PROXY is NOT set and do port-forwarding
