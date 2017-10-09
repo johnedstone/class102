@@ -149,7 +149,10 @@ X-Frame-Options: SAMEORIGIN
 * Moved CHOICES on fields up to settings, so they can be controlled by os.getenv
 * Files changed since v5.01
 ```
-
+chap05_adding_json_fields/restapi_project/aws_bucket_app/bucket.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/migrations/0001_initial.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/models.py
+chap05_adding_json_fields/restapi_project/restapi_project/settings.py
 ```
 
 
