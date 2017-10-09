@@ -55,7 +55,7 @@ class CreateBucket(models.Model):
     ACL_CHOICES = [(ac.strip(), ac.strip()) for ac in settings.AWS_ACL_CHOICES.split('|')]
     logger.info(ACL_CHOICES)
 
-    LOCATION_CONSTRAINT_CHOICES = [(lc.strip(), lc.strip()) for lc in settings.AWS_LOCATION_CONSTRAINT.split('|')]
+    LOCATION_CONSTRAINT_CHOICES = [(lc.strip(), lc.strip()) for lc in settings.AWS_LOCATION_CONSTRAINT_CHOICES.split('|')]
     logger.info(LOCATION_CONSTRAINT_CHOICES)
 
     acl = models.CharField(max_length=30, choices=ACL_CHOICES,
