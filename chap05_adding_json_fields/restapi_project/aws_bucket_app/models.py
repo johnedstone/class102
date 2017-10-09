@@ -68,15 +68,18 @@ class CreateBucket(models.Model):
     def __str__(self):
         return '{}:{}:{}'.format(self.change, self.bucket, self.location)
 
+    @property
     def http_status_code(self):
         return '{}'.format(self.s3_response.get(
             'ResponseMetadata', {}).get('HTTPStatusCode', 'unknown'))
 
+    @property
     def amz_bucket_region(self):
         return '{}'.format(self.s3_response.get(
             'ResponseMetadata', {}).get('HTTPHeaders', {}).get('x-amz-bucket-region', 'unknown'))
 
     # Used to avoid dealing with User hyperlink
+    @property
     def client_id_display(self):
         return '{}'.format(self.client.username)
 

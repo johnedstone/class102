@@ -174,5 +174,42 @@ X-Frame-Options: SAMEORIGIN
 ```
 
 ### Tag v5.02 in progress
+* Added `@property` decorator back to model to be consistent, considering this as a property
+* Add validator for S3 bucket naming
 
+```
+# http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
+# Best reference yet: http://info.easydynamics.com/blog/aws-s3-bucket-name-validation-regex
+# But first check it doesn't end in .
+
+
+ tt = re.compile(r'^([a-z]|(\d(?!\d{0,2}\.\d{1,3}\.\d{1,3}\.\d{1,3})))([a-z\d]|(\.(?!(\.|-)))|(-(?!\.))){1,61}[a-z\d\.]$')
+>>> patt.match(s)
+<_sre.SRE_Match object; span=(0, 3), match='boo'>
+>>> patt.match('Boo')
+>>> patt.match('boo.')
+<_sre.SRE_Match object; span=(0, 4), match='boo.'>
+>>> patt.match('boo.hoo')
+<_sre.SRE_Match object; span=(0, 7), match='boo.hoo'>
+>>> patt.match('bo')
+>>> s = 'a' * 64
+>>> patt.match(s)
+>>> patt.match('boo.hoo')
+<_sre.SRE_Match object; span=(0, 7), match='boo.hoo'>
+>>> patt.match('boo-hoo')
+<_sre.SRE_Match object; span=(0, 7), match='boo-hoo'>
+>>> patt.match('boo_hoo')
+
+ = 'boo-hoo.'
+>>> s.endswith('.')
+True
+>>> s = 'boo-hoo'
+>>> s.endswith('.')
+False
+>>> patt.match(s)
+<_sre.SRE_Match object; span=(0, 7), match='boo-hoo'>
+
+```
+
+### Tag v5.03 not started yet
 * Add tagging http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.BucketTagging
