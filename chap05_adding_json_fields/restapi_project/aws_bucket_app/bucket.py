@@ -19,7 +19,7 @@ logger = logging.getLogger('project_logging')
 NY_TIMEZONE = tz.gettz('America/New_York')
 
 def create_s3_bucket(bucket, access_key, secret_key,
-    acl=settings.ACL_DEFAULT,
+    acl=settings.AWS_ACL_DEFAULT,
     location_constraint=None):
 
     logger.info('Bucket:{}, AK: {}'.format(bucket,access_key))

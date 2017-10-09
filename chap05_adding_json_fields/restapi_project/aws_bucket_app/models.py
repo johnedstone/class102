@@ -2,10 +2,15 @@
 from __future__ import unicode_literals
 
 import logging
+import re
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.validators import (
+    RegexValidator, MinLengthValidator,
+)
 from django.db import models
 from django.db.models.signals import post_save
 
@@ -17,6 +22,28 @@ from .bucket import create_s3_bucket
 
 logger = logging.getLogger('project_logging')
 
+def validate_last_character(value):
+    if value.endswith('.'):
+        raise ValidationError(
+            'Buckent name, %(value)s, can not have a trailing period - %(msg)s',
+            params={
+                'value': value,
+                'msg': settings.AWS_BUCKET_NAME_COMPLIANT_MSG,
+            },
+        )
+
+def validate_lowercase(value):
+    patt = re.compile(r'[A-Z]')
+    logger.info(patt.match(value))
+    if patt.search(value):
+        raise ValidationError(
+            'Buckent name, %(value)s, can not have a upper case characters - %(msg)s',
+            params={
+                'value': value,
+                'msg': settings.AWS_BUCKET_NAME_COMPLIANT_MSG,
+            },
+        )
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     logger.info('Creating auth token')
@@ -24,31 +51,32 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 class CreateBucket(models.Model):
-    ACL_CHOICES = (
-        ('private', 'private'),
-        ('public-read', 'public-read'),
-        ('public-read-write', 'public-read-write'),
-        ('authenticated-read', 'authenticated-read'),
-    )
 
-    LOCATION_CONSTRAINT = (
-        ('EU', 'EU'),
-        ('eu-west-1', 'eu-west-1'),
-        ('us-west-1', 'us-west-1'),
-        ('us-west-2', 'us-west-2'),
-        ('ap-south-1', 'ap-south-1'),
-        ('ap-southeast-1', 'ap-southeast-1'),
-        ('ap-southeast-2', 'ap-southeast-2'),
-        ('ap-northeast-1', 'ap-northeast-1'),
-        ('sa-east-1', 'sa-east-1'),
-        ('cn-north-1', 'cn-north-1'),
-        ('eu-central-1', 'eu-central-1'),
-    )
+    ACL_CHOICES = [(ac.strip(), ac.strip()) for ac in settings.AWS_ACL_CHOICES.split('|')]
+    logger.info(ACL_CHOICES)
+
+    LOCATION_CONSTRAINT_CHOICES = [(lc.strip(), lc.strip()) for lc in settings.AWS_LOCATION_CONSTRAINT.split('|')]
+    logger.info(LOCATION_CONSTRAINT_CHOICES)
 
     acl = models.CharField(max_length=30, choices=ACL_CHOICES,
-        default=settings.ACL_DEFAULT, blank=True)
+        default=settings.AWS_ACL_DEFAULT, blank=True)
 
-    bucket = models.CharField(max_length=255)
+    bucket = models.CharField(max_length=63, validators=[
+        # This catches all, except 'ends with'
+        # Ref: http://info.easydynamics.com/blog/aws-s3-bucket-name-validation-regex
+        RegexValidator(
+            regex='^([a-z]|(\d(?!\d{0,2}\.\d{1,3}\.\d{1,3}\.\d{1,3})))([a-z\d]|(\.(?!(\.|-)))|(-(?!\.))){1,61}[a-z\d\.]$',
+            message=settings.AWS_BUCKET_NAME_COMPLIANT_MSG,
+        ),
+        validate_last_character,
+
+        # The following are extra, and give more specific messages which are helpful
+        MinLengthValidator(
+            limit_value=3,
+        ),
+        validate_last_character,
+        validate_lowercase,
+    ])
     bucket_creation_date = models.CharField(max_length=30, default='',
         blank=True)
     change = models.CharField(max_length=25)
@@ -57,7 +85,7 @@ class CreateBucket(models.Model):
     dry_run = models.BooleanField(default=True, blank=True)
     location = models.CharField(max_length=255, default='', blank=True)
     location_constraint = models.CharField(max_length=30,
-        choices=LOCATION_CONSTRAINT, default='', blank=True)
+        choices=LOCATION_CONSTRAINT_CHOICES, default='', blank=True)
     new_bucket = models.CharField(max_length=10, default='unknown', blank=True)
     request_created =  models.DateTimeField(auto_now_add=True)
     request_modified = models.DateTimeField(auto_now=True)

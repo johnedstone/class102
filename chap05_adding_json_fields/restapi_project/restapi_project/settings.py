@@ -184,8 +184,16 @@ SWAGGER_SETTINGS = {
 
 # Status messaging
 SUCCESS_MSG_NEW_BUCKET = os.getenv('SUCCESS_MSG_NEW_BUCKET', 'New bucket created')
-SUCCESS_MSG_PREEXISTING_BUCKET = os.getenv('SUCCESS_MSG_PREEXISTING_BUCKET', 'Bucket already exists')
+SUCCESS_MSG_PREEXISTING_BUCKET = os.getenv('SUCCESS_MSG_PREEXISTING_BUCKET',
+    'Bucket already exists')
 AWS_NO_RESPONSE = os.getenv('AWS_NO_RESPONSE', 'AWS response is empty')
 
-ACL_DEFAULT = os.getenv('ACL_DEFAULT', 'public-read')
+AWS_ACL_DEFAULT = os.getenv('ACL_DEFAULT', 'public-read')
+AWS_ACL_CHOICES = os.getenv('AWS_ACL_CHOICES',
+    'private|public-read|public-read-write|authenticated-read')
+AWS_LOCATION_CONSTRAINT = os.getenv('AWS_LOCATION_CONSTRAINT',
+    'EU|eu-west-1|us-west-1|us-west-2|ap-south-1|ap-southeast-1|ap-southeast-2|ap-northeast-1|sa-east-1|cn-north-1|eu-central-1')
+AWS_BUCKET_NAME_COMPLIANT_MSG = os.getenv('AWS_BUCKET_NAME_MSG',
+    'Bucket name is not DNS-compliant: http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html')
+
 # vi: ai et ts=4 sts=4 sw=4 nu ru

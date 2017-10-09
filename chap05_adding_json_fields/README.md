@@ -142,6 +142,20 @@ X-Frame-Options: SAMEORIGIN
                 "type": "boolean"
 ...........
 ```
+
+### Tag v5.02
+* Added `@property` decorator back to model to be consistent, considering this as a property
+* Add validator for S3 bucket naming
+* Moved CHOICES on fields up to settings, so they can be controlled by os.getenv
+* Files changed since v5.01
+```
+
+```
+
+
+### Tag v5.03 not started yet
+* Add tagging http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.BucketTagging
+
 #### Example response
 ```
 http http://127.0.0.1:8000/api/create-bucket/ "Authorization: Token boohoowoohoo" bucket="johnedstone-sat-15" change="CHXxxxx" dry_run=false location_constraint='us-west-1' acl='public-read'
@@ -172,44 +186,3 @@ X-Frame-Options: SAMEORIGIN
     "status": "New bucket created",
     "url": "http://127.0.0.1:8000/api/create-bucket/2/"
 ```
-
-### Tag v5.02 in progress
-* Added `@property` decorator back to model to be consistent, considering this as a property
-* Add validator for S3 bucket naming
-
-```
-# http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-# Best reference yet: http://info.easydynamics.com/blog/aws-s3-bucket-name-validation-regex
-# But first check it doesn't end in .
-
-
- tt = re.compile(r'^([a-z]|(\d(?!\d{0,2}\.\d{1,3}\.\d{1,3}\.\d{1,3})))([a-z\d]|(\.(?!(\.|-)))|(-(?!\.))){1,61}[a-z\d\.]$')
->>> patt.match(s)
-<_sre.SRE_Match object; span=(0, 3), match='boo'>
->>> patt.match('Boo')
->>> patt.match('boo.')
-<_sre.SRE_Match object; span=(0, 4), match='boo.'>
->>> patt.match('boo.hoo')
-<_sre.SRE_Match object; span=(0, 7), match='boo.hoo'>
->>> patt.match('bo')
->>> s = 'a' * 64
->>> patt.match(s)
->>> patt.match('boo.hoo')
-<_sre.SRE_Match object; span=(0, 7), match='boo.hoo'>
->>> patt.match('boo-hoo')
-<_sre.SRE_Match object; span=(0, 7), match='boo-hoo'>
->>> patt.match('boo_hoo')
-
- = 'boo-hoo.'
->>> s.endswith('.')
-True
->>> s = 'boo-hoo'
->>> s.endswith('.')
-False
->>> patt.match(s)
-<_sre.SRE_Match object; span=(0, 7), match='boo-hoo'>
-
-```
-
-### Tag v5.03 not started yet
-* Add tagging http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.BucketTagging
