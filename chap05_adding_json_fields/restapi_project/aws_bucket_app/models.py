@@ -172,7 +172,7 @@ class CreateBucket(models.Model):
                     else:
                         if self.new_bucket == 'yes':
                             self.status = settings.SUCCESS_MSG_NEW_BUCKET
-                        elif self.new_bucket == 'no':
+                        elif self.new_bucket == 'preexisting':
                             self.status = settings.SUCCESS_MSG_PREEXISTING_BUCKET
                         else:
                             self.status = 'unknown'

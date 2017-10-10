@@ -45,7 +45,7 @@ def create_s3_bucket(bucket, access_key, secret_key,
             bucket_obj = s3.Bucket(bucket)
             response['bucket_creation_date'] = '{}'.format(
                 bucket_obj.creation_date.astimezone(tz=NY_TIMEZONE))
-            response['new_bucket'] = 'no'
+            response['new_bucket'] = 'preexisting'
 
         except botocore.exceptions.ClientError as e:
             logger.info('Entering new bucket create')
@@ -109,7 +109,7 @@ def create_s3_bucket(bucket, access_key, secret_key,
 
                         # Clean up after deleting bucket
                         response['bucket_creation_date'] = ''
-                        response['new_bucket'] = ''
+                        response['new_bucket'] = 'no'
 
                         raise
 
