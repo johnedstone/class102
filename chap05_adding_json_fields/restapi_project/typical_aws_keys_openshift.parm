@@ -24,8 +24,8 @@ SUPERUSER_TOKEN=somegeneratedtoken
 USERS='client_id|token client_id2|token2'
 
 ## Optional
-# DEBUG=
-# SECRET_KEY=
+# DJANGO_DEBUG=
+# DJANGO_SECRET_KEY=
 # ALLOWED_HOSTS=
 # PROJECT_LOGGING_LEVEL= # WARNING|INFO
 # SUCCESS_MSG_NEW_BUCKET=

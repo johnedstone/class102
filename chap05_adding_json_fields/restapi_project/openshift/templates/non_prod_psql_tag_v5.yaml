@@ -1,0 +1,453 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: s3-bucket
+message: |-
+  The following service(s) have been created in your project: ${NAME}, ${DATABASE_SERVICE_NAME}.
+
+metadata:
+  annotations:
+    description: |-
+        A Django application with an ephemeral Postgresql to provide S3Bucket REST API
+
+      WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+    iconClass: icon-python
+    openshift.io/display-name: S3Bucket REST API + PostgreSQL (Ephemeral)
+    tags: s3-bucket,python,django,rest-api
+  name: s3-bucket
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${NAME}
+  stringData:
+    aws-access-key: ${AWS_ACCESS_KEY}
+    aws-secret-key: ${AWS_SECRET_KEY}
+    database-password: ${DATABASE_PASSWORD}
+    database-user: ${DATABASE_USER}
+    django-secret-key: ${DJANGO_SECRET_KEY}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+      service.alpha.openshift.io/dependencies: '[{"name": "${DATABASE_SERVICE_NAME}",
+        "kind": "Service"}]'
+    name: ${NAME}
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: ${NAME}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${NAME}
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    to:
+      kind: Service
+      name: ${NAME}
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    name: ${NAME}
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: Defines how to build the application
+    name: ${NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:latest
+    postCommit:
+      script: ./manage.py test
+    source:
+      contextDir: ${CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+      sourceSecret:
+        name: ${GITHUB_WEBHOOK_SECRET}
+    strategy:
+      sourceStrategy:
+        env:
+        - name: PIP_PROXY
+          value: ${PIP_PROXY}
+        - name: PIP_INDEX_URL
+          value: ${PIP_INDEX_URL}
+        - name: UPGRADE_PIP_TO_LATEST
+          value: ${UPGRADE_PIP_TO_LATEST}
+        from:
+          kind: ImageStreamTag
+          name: python:3.5
+          namespace: ${NAMESPACE}
+      type: Source
+    triggers:
+    - type: ImageChange
+    - type: ConfigChange
+    - github:
+        secret: ${GITHUB_WEBHOOK_SECRET}
+      type: GitHub
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+    name: ${NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${NAME}
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: ${NAME}
+        name: ${NAME}
+      spec:
+        containers:
+        - env:
+          - name: DATABASE_SERVICE_NAME
+            value: ${DATABASE_SERVICE_NAME}
+          - name: DATABASE_ENGINE
+            value: ${DATABASE_ENGINE}
+          - name: DATABASE_NAME
+            value: ${DATABASE_NAME}
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: ${NAME}
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: ${NAME}
+          - name: APP_CONFIG
+            value: ${APP_CONFIG}
+          - name: DJANGO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                key: django-secret-key
+                name: ${NAME}
+          - name: DJANGO_DEBUG
+            value: ${DJANGO_DEBUG}
+          - name: ALLOWED_HOSTS
+            value: ${ALLOWED_HOSTS}
+          - name: AWS_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws-access-key
+                name: ${NAME}
+          - name: AWS_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws-secret-key
+                name: ${NAME}
+          - name: AWS_HTTPS_PROXY
+            value: ${AWS_HTTPS_PROXY}
+          - name: AWS_HTTP_PROXY
+            value: ${AWS_HTTP_PROXY}
+          - name: SUCCESS_MSG_NEW_BUCKET
+            value: ${SUCCESS_MSG_NEW_BUCKET}
+          - name: SUCCESS_MSG_PREEXISTING_BUCKET
+            value: ${SUCCESS_MSG_PREEXISTING_BUCKET}
+          - name: AWS_NO_RESPONSE
+            value: ${AWS_NO_RESPONSE}
+          - name: SUPERUSER_USERNAME
+            value: ${SUPERUSER_USERNAME}
+          - name: SUPERUSER_PASSWORD
+            value: ${SUPERUSER_PASSWORD}
+          - name: SUPERUSER_TOKEN
+            value: ${SUPERUSER_TOKEN}
+          - name: USERS
+            value: ${USERS}
+          - name: PROJECT_LOGGING_LEVEL
+            value: ${PROJECT_LOGGING_LEVEL}
+          - name: AWS_ACL_DEFAULT
+            value: ${AWS_ACL_DEFAULT}
+          - name: AWS_ACL_CHOICES
+            value: ${AWS_ACL_CHOICES}
+          - name: AWS_LOCATION_CONSTRAINT_CHOICES
+            value: ${AWS_LOCATION_CONSTRAINT_CHOICES}
+          - name: AWS_BUCKET_NAME_COMPLIANT_MSG
+            value: ${AWS_BUCKET_NAME_COMPLIANT_MSG}
+          image: ' '
+          livenessProbe:
+            httpGet:
+              path: /liveness/
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+          name: s3-bucket
+          ports:
+          - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /readiness/
+              port: 8080
+            initialDelaySeconds: 3
+            timeoutSeconds: 3
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - s3-bucket
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}:latest
+      type: ImageChange
+    - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes the database server
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the database
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+        name: ${DATABASE_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: ${NAME}
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: ${NAME}
+          - name: POSTGRESQL_DATABASE
+            value: ${DATABASE_NAME}
+          image: ' '
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 5432
+            timeoutSeconds: 1
+          name: postgresql
+          ports:
+          - containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - psql -h 127.0.0.1 -U ${POSTGRESQL_USER} -q -d ${POSTGRESQL_DATABASE}
+                -c 'SELECT 1'
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: ${MEMORY_POSTGRESQL_LIMIT}
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: data
+        volumes:
+        - emptyDir: {}
+          name: data
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - postgresql
+        from:
+          kind: ImageStreamTag
+          name: postgresql:9.5
+          namespace: ${NAMESPACE}
+      type: ImageChange
+    - type: ConfigChange
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: s3-bucket
+- description: The OpenShift Namespace where the ImageStream resides.
+  displayName: Namespace
+  name: NAMESPACE
+  required: true
+  value: openshift
+- description: Maximum amount of memory the Django container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: Maximum amount of memory the PostgreSQL container can use.
+  displayName: Memory Limit (PostgreSQL)
+  name: MEMORY_POSTGRESQL_LIMIT
+  required: true
+  value: 512Mi
+- description: The URL of the repository with your application source code.
+  displayName: Git Repository URL
+  name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/johnedstone/class102.git
+- description: Set this to a branch name, tag or other ref of your repository if you
+    are not using the default branch.
+  displayName: Git Reference
+  name: SOURCE_REPOSITORY_REF
+- description: Set this to the relative path to your project if it is not in the root
+    of your repository.
+  displayName: Context Directory
+  name: CONTEXT_DIR
+- description: The exposed hostname that will route to the Django service, if left
+    blank a value will be defaulted.
+  displayName: Application Hostname
+  name: APPLICATION_DOMAIN
+- description: A secret string used to configure the GitHub webhook.
+  displayName: GitHub Webhook Secret
+  value: sshsecret
+  name: GITHUB_WEBHOOK_SECRET
+- displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: postgresql
+- description: 'Database engine: postgresql, mysql or sqlite (default).'
+  displayName: Database Engine
+  name: DATABASE_ENGINE
+  required: true
+  value: postgresql
+- displayName: Database Name
+  name: DATABASE_NAME
+  required: true
+  value: default
+- displayName: Database Username
+  name: DATABASE_USER
+  required: true
+  value: django
+- displayName: Database User Password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: DATABASE_PASSWORD
+- description: Relative path to Gunicorn configuration file (optional).
+  displayName: Application Configuration File Path
+  name: APP_CONFIG
+- description: Set this to a long random string.
+  displayName: Django Secret Key
+  from: '[\w]{50}'
+  generate: expression
+  name: DJANGO_SECRET_KEY
+- description: The custom PyPi index URL
+  displayName: Custom PyPi Index URL
+  name: PIP_INDEX_URL
+- name: PIP_PROXY
+  displayName: PIP PROXY
+  description: PIP environment variable for proxy
+- description: Django Debug settings variable 
+  displayName: Django Debug settings variable
+  name: DJANGO_DEBUG
+  value: 'off'
+- name: ALLOWED_HOSTS
+  displayName: Allowed Hosts
+  description: Allowed host - django setting
+  value: '*'
+- name: UPGRADE_PIP_TO_LATEST
+  displayName: Upgrade pip to the latest
+  description: Upgrade pip to the latest
+  value: 'yes' 
+- name: AWS_ACCESS_KEY
+  displayName: AWS ACCESS KEY
+  description: AWS access key
+- name: AWS_SECRET_KEY
+  displayName: AWS SECRET KEY
+  description: AWS secret key
+- name: AWS_HTTPS_PROXY
+  displayName: HTTPS PROXY
+  description: HTTPS Proxy for AWS config
+- name: AWS_HTTP_PROXY
+  displayName: HTTP PROXY
+  description: HTTP Proxy for AWS config
+- name: SUCCESS_MSG_NEW_BUCKET
+  displayName: SUCCESS MSG NEW BUCKET
+  description: Success msg new bucket
+  value: 'New bucket created'
+- name: SUCCESS_MSG_PREEXISTING_BUCKET
+  displayName: SUCCESS MSG PREEXISTING BUCKET
+  description: Success Msg Preexisting Bucket
+  value: 'Bucket already exists'
+- name: AWS_NO_RESPONSE
+  displayName: AWS NO RESPONSE
+  description: AWS No Response
+  value: 'AWS response is empty'
+- name: SUPERUSER_USERNAME
+  displayName: SUPERUSER USERNAME
+  description: Superuser username
+  value: someusername
+- name: SUPERUSER_PASSWORD
+  displayName: SUPERUSER PASSWORD
+  description: Superuser password
+  generate: expression
+  from: '[\w]{50}'
+- name: SUPERUSER_TOKEN
+  displayName: SUPERUSER TOKEN
+  description: Superuser Token
+  generate: expression
+  from: '[\w]{20}'
+- name: USERS
+  displayName: USERS
+  description: Users and token
+  value: 'client_id|token client_id_02|another_token'
+- name: PROJECT_LOGGING_LEVEL
+  displayName: Project Logging Level
+  description: Project Logging Level
+  value: 'WARNING' 
+- name: AWS_ACL_DEFAULT
+  displayName: AWS ACL Default
+  description: AWS ACL Default
+  value: 'public-read'
+- name: AWS_ACL_CHOICES
+  displayName: AWS ACL Choices
+  description: AWS ACL Choices
+  value: 'private|public-read|public-read-write|authenticated-read'
+- name: AWS_LOCATION_CONSTRAINT_CHOICES
+  displayName: AWS Location Constraint Choices
+  description: AWS Location Constraint Choices
+  value: 'EU|eu-west-1|us-west-1|us-west-2|ap-south-1|ap-southeast-1|ap-southeast-2|ap-northeast-1|sa-east-1|cn-north-1|eu-central-1' 
+- name: AWS_BUCKET_NAME_COMPLIANT_MSG
+  displayName: AWS Bucket Name Compliant MSG
+  description: AWS Bucket Name Compliant MSG
+  value:  'Bucket name is not DNS-compliant: http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html'
+
+# vim: ai et ts=2 sts=2 sw=2 nu
