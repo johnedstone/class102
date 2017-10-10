@@ -161,7 +161,13 @@ chap05_adding_json_fields/restapi_project/restapi_project/settings.py
 * https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTtagging.html
 * Files changed
 ```
-
+chap05_adding_json_fields/restapi_project/aws_bucket_app/bucket.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/migrations/0001_initial.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/models.py
+chap05_adding_json_fields/restapi_project/aws_bucket_app/serializers.py
+chap05_adding_json_fields/restapi_project/restapi_project/settings.py
+chap05_adding_json_fields/restapi_project/typical_aws_keys.sh
+chap05_adding_json_fields/restapi_project/typical_aws_keys_openshift.parm
 ```
 
 ### Tag v5.04 next
