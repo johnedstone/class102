@@ -8,6 +8,11 @@ AWS_HTTP_PROXY='http://ip:port'
 
 PIP_PROXY=<ip:port>
 APPLICATION_DOMAIN=fqdn
+DJANGO_SECRET_KEY= # hashlib.sha1(os.urandom(128)).hexdigest()
+
+SOURCE_REPOSITORY_URL=
+SOURCE_REPOSITORY_REF=
+CONTEXT_DIR=
 
 # Setting users and tokens in "run" script so as not to rely on persistant database
 SUPERUSER_USERNAME=someusername
@@ -25,7 +30,6 @@ USERS='client_id|token client_id2|token2'
 
 ## Optional
 # DJANGO_DEBUG=
-# DJANGO_SECRET_KEY=
 # ALLOWED_HOSTS=
 # PROJECT_LOGGING_LEVEL= # WARNING|INFO
 # SUCCESS_MSG_NEW_BUCKET=

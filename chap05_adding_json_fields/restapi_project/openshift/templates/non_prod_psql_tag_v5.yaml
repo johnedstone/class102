@@ -7,10 +7,10 @@ message: |-
 
 metadata:
   annotations:
-    description: |-
-        A Django application with an ephemeral Postgresql to provide S3Bucket REST API
-
-      WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+    #description: |-
+    #    A Django application with an ephemeral Postgresql to provide S3Bucket REST API
+#
+    #  WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
     iconClass: icon-python
     openshift.io/display-name: S3Bucket REST API + PostgreSQL (Ephemeral)
     tags: s3-bucket,python,django,rest-api
