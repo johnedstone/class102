@@ -37,7 +37,7 @@ def validate_lowercase(value):
     logger.info(patt.match(value))
     if patt.search(value):
         raise ValidationError(
-            'Buckent name, %(value)s, can not have a upper case characters.',
+            'Buckent name, %(value)s, can not contain any upper case characters.',
             params={
                 'value': value,
             },

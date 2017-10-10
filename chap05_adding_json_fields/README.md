@@ -170,40 +170,26 @@ chap05_adding_json_fields/restapi_project/typical_aws_keys.sh
 chap05_adding_json_fields/restapi_project/typical_aws_keys_openshift.parm
 ```
 
-### Tag v5.04 next
+### Tag v5.04 - Up in Openshift
 * Added back CORS
 * Changed endpoint from create-bucket to s3-bucket to be consistent with naming convention, removing the verb
 * Fixed Location
 * Changed model from CreateBucket to S3Bucket, again to be consistent with naming convention
 * Update Openshift template, and default values
 
-#### Example response
 ```
-http http://127.0.0.1:8000/api/create-bucket/ "Authorization: Token boohoowoohoo" bucket="johnedstone-sat-15" change="CHXxxxx" dry_run=false location_constraint='us-west-1' acl='public-read'
+oc new-project project-name
+oc secrets new-sshauth sshsecret --ssh-privatekey=/path/to/key/
+oc secret add serviceaccount/builder secrets/sshsecret
+oc new-app --param-file ~/openshift_env/aws_credentials/aws_keys_openshift.parm -f openshift/templates/non_prod_psql_tag_v5.yaml
 
-HTTP/1.0 201 Created
-Allow: GET, HEAD, OPTIONS, POST
-Content-Length: 433
-Content-Type: application/json
-Date: Sun, 08 Oct 2017 05:36:16 GMT
-Location: http://127.0.0.1:8000/api/create-bucket/2/
-Server: WSGIServer/0.2 CPython/3.5.1
-X-Frame-Options: SAMEORIGIN
+# Delete
+oc delete all --all
+oc delete secrets s3-bucket
+oc delete secret sshsecret
 
-{
-    "acl": "public-read",
-    "amz_bucket_region": "us-west-1",
-    "bucket": "johnedstone-sat-15",
-    "bucket_creation_date": "2017-10-08 01:36:15-04:00",
-    "change": "CHXxxxx",
-    "client_id_display": "boohoo",
-    "dry_run": false,
-    "http_status_code": "200",
-    "location": "",
-    "location_constraint": "us-west-1",
-    "new_bucket": "yes",
-    "request_created": "2017-10-08T05:36:16.044080Z",
-    "s3_error": "",
-    "status": "New bucket created",
-    "url": "http://127.0.0.1:8000/api/create-bucket/2/"
 ```
+
+### Tag v5.05 in progress
+* Add USAGE.md
+
