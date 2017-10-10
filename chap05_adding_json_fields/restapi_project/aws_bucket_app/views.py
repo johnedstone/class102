@@ -7,14 +7,14 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotAuthenticated
 
-from .models import CreateBucket
-from .serializers import CreateBucketSerializer
+from .models import S3Bucket
+from .serializers import S3BucketSerializer
 
 logger = logging.getLogger('project_logging')
 
-class CreateBucketViewSet(viewsets.ModelViewSet):
-    queryset = CreateBucket.objects.all()
-    serializer_class = CreateBucketSerializer
+class S3BucketViewSet(viewsets.ModelViewSet):
+    queryset = S3Bucket.objects.all()
+    serializer_class = S3BucketSerializer
     http_method_names = ['get', 'head', 'options', 'post']
     # permission_classes = (permissions.IsAuthenticated,)
 

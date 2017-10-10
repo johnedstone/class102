@@ -78,7 +78,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-class CreateBucket(models.Model):
+class S3Bucket(models.Model):
 
     ACL_CHOICES = [(ac.strip(), ac.strip()) for ac in settings.AWS_ACL_CHOICES.split('|')]
     logger.info(ACL_CHOICES)
@@ -188,7 +188,7 @@ class CreateBucket(models.Model):
         except Exception as e:
             logger.error('Save Exception: {}'.format(e))
 
-        super(CreateBucket, self).save(*args, **kwargs)
+        super(S3Bucket, self).save(*args, **kwargs)
 
 
 # vim: ai et ts=4 sw=4 sts=4 nu ru

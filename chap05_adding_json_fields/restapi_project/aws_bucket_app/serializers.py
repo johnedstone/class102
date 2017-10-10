@@ -3,12 +3,12 @@ from __future__ import unicode_literals
 
 from rest_framework import serializers
 
-from .models import CreateBucket
+from .models import S3Bucket
 
-class CreateBucketSerializer(serializers.HyperlinkedModelSerializer):
+class S3BucketSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = CreateBucket
+        model = S3Bucket
         fields = [
             'acl',
             'amz_bucket_region',

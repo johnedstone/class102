@@ -174,6 +174,7 @@ chap05_adding_json_fields/restapi_project/typical_aws_keys_openshift.parm
 * Added back CORS
 * Changed endpoint from create-bucket to s3-bucket to be consistent with naming convention, removing the verb
 * Fixed Location
+* Changed model from CreateBucket to S3Bucket, again to be consistent with naming convention
 * Update Openshift template, and default values
 
 #### Example response
