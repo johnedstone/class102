@@ -111,21 +111,20 @@ class CreateBucket(models.Model):
     client = models.ForeignKey(User, related_name="client",
         on_delete=models.CASCADE)
     dry_run = models.BooleanField(default=True, blank=True)
-    location = models.CharField(max_length=255, default='', blank=True)
     location_constraint = models.CharField(max_length=30,
         choices=LOCATION_CONSTRAINT_CHOICES, default='', blank=True)
-    new_bucket = models.CharField(max_length=10, default='unknown', blank=True)
+    new_bucket = models.CharField(max_length=30, default='unknown', blank=True)
     request_created =  models.DateTimeField(auto_now_add=True)
     request_modified = models.DateTimeField(auto_now=True)
     s3_response = JSONField(default={}, blank=True)
     s3_error = models.CharField(max_length=255, default='', blank=True)
-    status = models.CharField(max_length=255, default='Pending', blank=True)
+    status = models.CharField(max_length=30, default='Pending', blank=True)
     tag_set_list = JSONField(default=[], blank=True,
         validators=[validate_list,])
     tag_set_created = JSONField(default=[], blank=True,)
 
     def __str__(self):
-        return '{}:{}:{}'.format(self.change, self.bucket, self.location)
+        return '{}:{}'.format(self.change, self.bucket)
 
     @property
     def http_status_code(self):
@@ -136,6 +135,9 @@ class CreateBucket(models.Model):
     def amz_bucket_region(self):
         return '{}'.format(self.s3_response.get(
             'ResponseMetadata', {}).get('HTTPHeaders', {}).get('x-amz-bucket-region', 'unknown'))
+    @property
+    def location(self):
+        return '{}'.format(self.s3_response.get('Location', ''))
 
     # Used to avoid dealing with User hyperlink
     @property
@@ -149,7 +151,6 @@ class CreateBucket(models.Model):
         try:
             if self.dry_run:
                 self.status = 'Dry Run'
-                self.location = 'N/A'
             else:
                 result = create_s3_bucket(
                     self.bucket, settings.AWS_ACCESS_KEY, 
@@ -167,7 +168,7 @@ class CreateBucket(models.Model):
                     _error = result.get('error')
 
                     if _error:
-                        self.s3_error = _error
+                        self.s3_error = _error[0:254]
                         self.status = 'Failed'
                     else:
                         if self.new_bucket == 'yes':
@@ -177,7 +178,6 @@ class CreateBucket(models.Model):
                         else:
                             self.status = 'unknown'
 
-                        self.location = result.get('Location', '')
                         logger.info('result from aws type: {}'.format(type(result)))
                         if isinstance(result, dict):
                             self.s3_response = result

@@ -42,6 +42,8 @@ def create_s3_bucket(bucket, access_key, secret_key,
         try:
             logger.info('Entering existing bucket try')
             response = s3.meta.client.head_bucket(Bucket=bucket)
+            logger.info('Preexisting response: {}'.format(response))
+
             bucket_obj = s3.Bucket(bucket)
             response['bucket_creation_date'] = '{}'.format(
                 bucket_obj.creation_date.astimezone(tz=NY_TIMEZONE))
@@ -53,26 +55,27 @@ def create_s3_bucket(bucket, access_key, secret_key,
             error_code = int(e.response['Error']['Code'])
             if error_code == 404:
                 if location_constraint:
-                    new_bucket = s3.create_bucket(
-                        Bucket=bucket,
+                    new_bucket = s3.Bucket(bucket)
+                    new_bucket_location = new_bucket.create(
                         ACL=acl,
                         CreateBucketConfiguration={
                            "LocationConstraint": location_constraint
                         }
                     )
-                    bucket_tagging_resource = new_bucket.Tagging()
-                    logger.info('bucket tagging resource: {}'.format(bucket_tagging_resource))
                 else:
-                    new_bucket = s3.create_bucket(
-                        Bucket=bucket,
+                    new_bucket = s3.Bucket(bucket)
+                    new_bucket_location = new_bucket.create(
                         ACL=acl
                     )
+                    logger.info('new bucket location: {}'.format(new_bucket_location))
     
-                    # Bucket created
-                    response = s3.meta.client.head_bucket(Bucket=bucket)
-                    response['bucket_creation_date'] = '{}'.format(
-                    new_bucket.creation_date.astimezone(tz=NY_TIMEZONE))
-                    response['new_bucket'] = 'yes'
+                # Bucket created
+                response = s3.meta.client.head_bucket(Bucket=bucket)
+                response['bucket_creation_date'] = '{}'.format(
+                new_bucket.creation_date.astimezone(tz=NY_TIMEZONE))
+                response['new_bucket'] = 'yes'
+                response['Location'] = new_bucket_location.get('Location', '')
+
 
                 if tag_set_list:
                     try:
