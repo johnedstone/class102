@@ -159,8 +159,12 @@ chap05_adding_json_fields/restapi_project/restapi_project/settings.py
 ### Tag v5.03 in progress
 * Add tagging http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.BucketTagging
 * https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTtagging.html
+* Files changed
+```
 
-### Tag v5.04 not yet started
+```
+
+### Tag v5.04 next
 * Update Openshift template, and default values
 
 #### Example response

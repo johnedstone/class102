@@ -44,6 +44,34 @@ def validate_lowercase(value):
             },
         )
 
+def validate_list(value):
+    if not isinstance(value, list):
+        raise ValidationError(
+            'tag_set_list, %(value)s, is not a list, e.g. [{"key": "value"},]',
+            params={
+                'value': value,
+            },
+        )
+    else:
+        for d in value:
+            if not isinstance(d, dict):
+                raise ValidationError(
+                    'list item, %(d)s, is not a key: value pair',
+                    params={
+                    'd': d,
+                    },
+                )
+            else:
+                for k in d.keys():
+                    if not isinstance(d[k], str):
+                        raise ValidationError(
+                            'The value %(v)s, is not string',
+                            params={
+                            'v': d[k],
+                            },
+                        )
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     logger.info('Creating auth token')
@@ -92,6 +120,9 @@ class CreateBucket(models.Model):
     s3_response = JSONField(default={}, blank=True)
     s3_error = models.CharField(max_length=255, default='', blank=True)
     status = models.CharField(max_length=255, default='Pending', blank=True)
+    tag_set_list = JSONField(default=[], blank=True,
+        validators=[validate_list,])
+    tag_set_created = JSONField(default=[], blank=True,)
 
     def __str__(self):
         return '{}:{}:{}'.format(self.change, self.bucket, self.location)
@@ -112,6 +143,9 @@ class CreateBucket(models.Model):
         return '{}'.format(self.client.username)
 
     def save(self, *args, **kwargs):
+        logger.info('tag_set_list type: {}'.format(type(self.tag_set_list)))
+        logger.info('tag_set_list: {}'.format(self.tag_set_list))
+
         try:
             if self.dry_run:
                 self.status = 'Dry Run'
@@ -121,12 +155,14 @@ class CreateBucket(models.Model):
                     self.bucket, settings.AWS_ACCESS_KEY, 
                     settings.AWS_SECRET_KEY,
                     acl=self.acl,
-                    location_constraint=self.location_constraint)
+                    location_constraint=self.location_constraint,
+                    tag_set_list=self.tag_set_list)
 
     
                 if result:
                     self.bucket_creation_date = result.get('bucket_creation_date', '')
                     self.new_bucket = result.get('new_bucket', 'unknown')
+                    self.tag_set_created = result.get('tag_set_created', [])
 
                     _error = result.get('error')
 
@@ -142,7 +178,7 @@ class CreateBucket(models.Model):
                             self.status = 'unknown'
 
                         self.location = result.get('Location', '')
-                        logger.info(type(result))
+                        logger.info('result from aws type: {}'.format(type(result)))
                         if isinstance(result, dict):
                             self.s3_response = result
                         logger.info('s3_response: {}'.format(self.s3_response))

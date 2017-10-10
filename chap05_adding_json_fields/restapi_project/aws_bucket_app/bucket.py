@@ -20,7 +20,8 @@ NY_TIMEZONE = tz.gettz('America/New_York')
 
 def create_s3_bucket(bucket, access_key, secret_key,
     acl=settings.AWS_ACL_DEFAULT,
-    location_constraint=None):
+    location_constraint=None,
+    tag_set_list=[]):
 
     logger.info('Bucket:{}, AK: {}'.format(bucket,access_key))
 
@@ -48,7 +49,7 @@ def create_s3_bucket(bucket, access_key, secret_key,
 
         except botocore.exceptions.ClientError as e:
             logger.info('Entering new bucket create')
-            logger.error(e)
+            logger.debug(e)
             error_code = int(e.response['Error']['Code'])
             if error_code == 404:
                 if location_constraint:
@@ -59,19 +60,63 @@ def create_s3_bucket(bucket, access_key, secret_key,
                            "LocationConstraint": location_constraint
                         }
                     )
+                    bucket_tagging_resource = new_bucket.Tagging()
+                    logger.info('bucket tagging resource: {}'.format(bucket_tagging_resource))
                 else:
                     new_bucket = s3.create_bucket(
                         Bucket=bucket,
                         ACL=acl
                     )
+    
+                    # Bucket created
+                    response = s3.meta.client.head_bucket(Bucket=bucket)
+                    response['bucket_creation_date'] = '{}'.format(
+                    new_bucket.creation_date.astimezone(tz=NY_TIMEZONE))
+                    response['new_bucket'] = 'yes'
 
-                response = s3.meta.client.head_bucket(Bucket=bucket)
-                response['bucket_creation_date'] = '{}'.format(
-                     new_bucket.creation_date.astimezone(tz=NY_TIMEZONE))
-                response['new_bucket'] = 'yes'
+                if tag_set_list:
+                    try:
+                        bucket_tagging_resource = new_bucket.Tagging()
+                        logger.info('bucket tagging resource: {}'.format(bucket_tagging_resource))
+
+                        _tag_set = [] 
+                        for ea in tag_set_list:
+                            k = list(ea.keys())[0]
+                            _tag_set.append(
+                                {"Key": k,
+                                 "Value": ea[k]
+                                }
+                            )
+
+                        logger.info('_tag_set: {}'.format(_tag_set))
+
+                        bucket_tagging_response = bucket_tagging_resource.put(
+                            Tagging={
+                                'TagSet': _tag_set
+                            }
+                        )
+    
+                        logger.debug('bucket tagging response: {}'.format(bucket_tagging_response))
+                        tag_set_created = bucket_tagging_resource.tag_set
+                        logger.info('tag set created: {}'.format(tag_set_created))
+                        response['tag_set_created'] = tag_set_created
+    
+                    except Exception as e:
+                        logger.error('Bucket tagging error: {}'.format(e))
+                        logger.warning('Deleting this bucket: {}'.format(new_bucket))
+                        bucket_delete_response = new_bucket.delete()
+                        logger.info('Bucket delete response: {}'.format(bucket_delete_response))
+
+                        # Clean up after deleting bucket
+                        response['bucket_creation_date'] = ''
+                        response['new_bucket'] = ''
+
+                        raise
+
             elif error_code == 403:
                 response = {'error': e}
             else:
+                logging.error('Error creating bucket: error_code unknown')
                 raise
 
     except ConnectionError as e:
