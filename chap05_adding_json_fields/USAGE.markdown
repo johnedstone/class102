@@ -1,9 +1,9 @@
-### Usage
+#### Usage
 * Showing both curl and the python client, [HTTPie](https://httpie.org/)
 * Currently, only creating S3 Buckets is supported.  Updating and deleting may be supported at later date.
 * The superuser can list all the requests in the ephemeral database.  Each use can only view their requests.
 
-### Simple case, following the endpoint, 302 Status code
+#### Simple case, following the endpoint, 302 Status code
 
 ```
 curl -s --header 'Content-Type: application/json' --header 'Accept: application/json' https://yourserver.com/
@@ -55,7 +55,7 @@ Server: gunicorn/19.7.1
 
 ```
 
-### Is CORS enabled? Yes
+#### Is CORS enabled? Yes
 Notice: `Access-Control-Allow-Origin: *`
 ```
 curl -s -I --header 'Origin: http://boo.hoo.com/' --header 'Content-Type: application/json' --header 'Accept: application/json' https://yourserver.com/api/
@@ -83,7 +83,7 @@ Server: gunicorn/19.7.1
 
 ```
 
-### Simplest S3 request
+#### Simplest S3 request
 Taking all the defaults, first dry_run=false (default), then setting dry_run=false
 
 ```
@@ -210,7 +210,7 @@ Server: gunicorn/19.7.1
 
 ```
 
-### Using the field `tag_set_list` showing validation error as well
+#### Using the field `tag_set_list` showing validation error as well
 For example, if the tags were needed "System Owner" and "Charge Center"
 ```
 https://yourserver.com/api/s3-bucket/ "Authorization: Token yourprivatetoken" bucket=a.test.bucket.03 change=CHGxxx dry_run=false tag_set_list:='{"System Owner": "Charlie Brown", "Charge Center": "Lucy"}'
@@ -315,7 +315,7 @@ curl -sv -d '{"bucket": "a.test.bucket.06", "change": "CHGxxxxx", "dry_run": fal
 
 ```
 
-### Just in case: gettting your token, if you forgot
+#### Just in case: gettting your token, if you forgot
 ```
 http https://yourserver.com/api-token-auth/ username=your-client-id password=your-password
 HTTP/1.1 200 OK
@@ -330,7 +330,7 @@ Server: gunicorn/19.7.1
 }
 ```
 
-### Using the OPTIONS method to list the available fields: `read_only: false`
+#### Using the OPTIONS method to list the available fields: `read_only: false`
 
 Note:
 * More fields may be added, use this as an example only
@@ -538,7 +538,7 @@ curl -sv -X OPTIONS --header 'Content-Type: application/json' --header 'Accept: 
     }
 }
 
-### Or with HTTPie
+#### Or with HTTPie
 http OPTIONS https://yourserver.com/api/s3-bucket/
 HTTP/1.1 200 OK
 Allow: GET, HEAD, OPTIONS, POST

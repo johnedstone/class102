@@ -11,3 +11,7 @@ Let's explore
 
 Note: we will be using the django framework, and then the django rest framework, but
 other python frameworks could be used, e.g. flask
+
+## Conclusion
+* Last tag: v5.05
+* Moved development to [https://github.com/johnedstone/django-rest-api-openshift-s3-bucket](https://github.com/johnedstone/django-rest-api-openshift-s3-bucket)

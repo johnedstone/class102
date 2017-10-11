@@ -191,6 +191,6 @@ oc delete secret sshsecret
 ```
 
 ### Tag v5.05
-* Add USAGE.md
+* Add USAGE.markdown
 * Moving development to [https://github.com/johnedstone/django-rest-api-openshift-s3-bucket](https://github.com/johnedstone/django-rest-api-openshift-s3-bucket)
 
