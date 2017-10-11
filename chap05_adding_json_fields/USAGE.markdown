@@ -1,7 +1,9 @@
 ### Usage
-Showing both curl and the python client, [HTTPie](https://httpie.org/)
+* Showing both curl and the python client, [HTTPie](https://httpie.org/)
+* Currently, only creating S3 Buckets is supported.  Updating and deleting may be supported at later date.
+* The superuser can list all the requests in the ephemeral database.  Each use can only view their requests.
 
-#### Simple case, following the endpoint, 302 Status code
+### Simple case, following the endpoint, 302 Status code
 
 ```
 curl -s --header 'Content-Type: application/json' --header 'Accept: application/json' https://yourserver.com/
@@ -53,7 +55,7 @@ Server: gunicorn/19.7.1
 
 ```
 
-#### Is CORS enabled? Yes
+### Is CORS enabled? Yes
 Notice: `Access-Control-Allow-Origin: *`
 ```
 curl -s -I --header 'Origin: http://boo.hoo.com/' --header 'Content-Type: application/json' --header 'Accept: application/json' https://yourserver.com/api/
@@ -81,7 +83,7 @@ Server: gunicorn/19.7.1
 
 ```
 
-#### Simplest S3 request
+### Simplest S3 request
 Taking all the defaults, first dry_run=false (default), then setting dry_run=false
 
 ```
@@ -208,7 +210,112 @@ Server: gunicorn/19.7.1
 
 ```
 
-#### Just in case: gettting your token, if you forgot
+### Using the field `tag_set_list` showing validation error as well
+For example, if the tags were needed "System Owner" and "Charge Center"
+```
+https://yourserver.com/api/s3-bucket/ "Authorization: Token yourprivatetoken" bucket=a.test.bucket.03 change=CHGxxx dry_run=false tag_set_list:='{"System Owner": "Charlie Brown", "Charge Center": "Lucy"}'
+HTTP/1.1 400 Bad Request
+
+{
+    "tag_set_list": [
+        "tag_set_list, {'System Owner': 'Charlie Brown', 'Charge Center': 'Lucy'}, is not a list, e.g. [{\"key\": \"value\"},]"
+    ]
+}
+
+http https://yourserver.com/api/s3-bucket/ "Authorization: Token yourprivatetoken" bucket=a.test.bucket.03 change=CHGxxx dry_run=false tag_set_list:='[{"System Owner": "Charlie Brown"}, {"Charge Center": "Lucy"}]'
+HTTP/1.1 201 Created
+Allow: GET, HEAD, OPTIONS, POST
+Content-Length: 647
+Content-Type: application/json
+Date: Wed, 11 Oct 2017 17:26:26 GMT
+Location: https://yourserver.com/api/s3-bucket/7/
+Server: gunicorn/19.7.1
+
+{
+    "acl": "public-read",
+    "amz_bucket_region": "us-east-1",
+    "bucket": "a.test.bucket.03",
+    "bucket_creation_date": "2017-10-11 13:26:27-04:00",
+    "change": "CHGxxx",
+    "client_id_display": "boohoo",
+    "dry_run": false,
+    "http_status_code": "200",
+    "location": "/a.test.bucket.03",
+    "location_constraint": "",
+    "new_bucket": "yes",
+    "request_created": "2017-10-11T17:26:26.862528Z",
+    "s3_error": "",
+    "status": "New bucket created",
+    "tag_set_created": [
+        {
+            "Key": "Charge Center",
+            "Value": "Lucy"
+        },
+        {
+            "Key": "System Owner",
+            "Value": "Charlie Brown"
+        }
+    ],
+    "tag_set_list": [
+        {
+            "System Owner": "Charlie Brown"
+        },
+        {
+            "Charge Center": "Lucy"
+        }
+    ],
+    "url": "https://yourserver.com/api/s3-bucket/7/"
+}
+
+curl -sv -d '{"bucket": "a.test.bucket.06", "change": "CHGxxxxx", "dry_run": false, "tag_set_list": [{"System Owner": "Charlie Brown"}, {"Charge Center": "Lucy"}]}' --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Token yourprivatetoken'  https://yourserver.com/api/s3-bucket/ | python -m json.tool
+< HTTP/1.1 201 Created
+< Server: gunicorn/19.7.1
+< Date: Wed, 11 Oct 2017 17:35:43 GMT
+< X-Frame-Options: SAMEORIGIN
+< Content-Type: application/json
+< Content-Length: 650
+< Location: https://yourserver.com/api/s3-bucket/10/
+< Allow: GET, HEAD, OPTIONS, POST
+<
+{
+    "acl": "public-read",
+    "amz_bucket_region": "us-east-1",
+    "bucket": "a.test.bucket.06",
+    "bucket_creation_date": "2017-10-11 13:35:43-04:00",
+    "change": "CHGxxxxx",
+    "client_id_display": "boohoo",
+    "dry_run": false,
+    "http_status_code": "200",
+    "location": "/a.test.bucket.06",
+    "location_constraint": "",
+    "new_bucket": "yes",
+    "request_created": "2017-10-11T17:35:43.256556Z",
+    "s3_error": "",
+    "status": "New bucket created",
+    "tag_set_list": [
+        {
+            "System Owner": "Charlie Brown"
+        },
+        {
+            "Charge Center": "Lucy"
+        }
+    ],
+    "tag_set_created": [
+        {
+            "Key": "Charge Center",
+            "Value": "Lucy"
+        },
+        {
+            "Key": "System Owner",
+            "Value": "Charlie Brown"
+        }
+    ],
+    "url": "https://yourserver.com/api/s3-bucket/10/"
+}
+
+```
+
+### Just in case: gettting your token, if you forgot
 ```
 http https://yourserver.com/api-token-auth/ username=your-client-id password=your-password
 HTTP/1.1 200 OK
@@ -221,4 +328,252 @@ Server: gunicorn/19.7.1
 {
     "token": "yourprivatetoken"
 }
+```
+
+### Using the OPTIONS method to list the available fields: `read_only: false`
+
+Note:
+* More fields may be added, use this as an example only
+* An Authorization Token is not needed
+
+```
+curl -sv -X OPTIONS --header 'Content-Type: application/json' --header 'Accept: application/json'  https://yourserver.com/api/s3-bucket/ | python -m json.tool 
+> OPTIONS /api/s3-bucket/ HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: yourserver.com
+> Content-Type: application/json
+> Accept: application/json
+>
+< HTTP/1.1 200 OK
+< Server: gunicorn/19.7.1
+< Date: Wed, 11 Oct 2017 16:01:23 GMT
+< X-Frame-Options: SAMEORIGIN
+< Content-Type: application/json
+< Content-Length: 2546
+< Allow: GET, HEAD, OPTIONS, POST
+
+{
+    "name": "S3 Bucket List",
+    "description": "",
+    "renders": [
+        "application/json"
+    ],
+    "parses": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
+    ],
+    "actions": {
+        "POST": {
+            "acl": {
+                "type": "choice",
+                "required": false,
+                "read_only": false,
+                "label": "Acl",
+                "choices": [
+                    {
+                        "display_name": "private",
+                        "value": "private"
+                    },
+                    {
+                        "display_name": "public-read",
+                        "value": "public-read"
+                    },
+                    {
+                        "display_name": "public-read-write",
+                        "value": "public-read-write"
+                    },
+                    {
+                        "display_name": "authenticated-read",
+                        "value": "authenticated-read"
+                    }
+                ]
+            },
+            "amz_bucket_region": {
+                "type": "field",
+                "required": false,
+                "read_only": true,
+                "label": "Amz bucket region"
+            },
+            "bucket": {
+                "type": "string",
+                "required": true,
+                "read_only": false,
+                "label": "Bucket",
+                "min_length": 3,
+                "max_length": 63
+            },
+            "bucket_creation_date": {
+                "type": "string",
+                "required": false,
+                "read_only": true,
+                "label": "Bucket creation date"
+            },
+            "change": {
+                "type": "string",
+                "required": true,
+                "read_only": false,
+                "label": "Change",
+                "max_length": 25
+            },
+            "client_id_display": {
+                "type": "field",
+                "required": false,
+                "read_only": true,
+                "label": "Client id display"
+            },
+            "dry_run": {
+                "type": "boolean",
+                "required": false,
+                "read_only": false,
+                "label": "Dry run"
+            },
+            "http_status_code": {
+                "type": "field",
+                "required": false,
+                "read_only": true,
+                "label": "Http status code"
+            },
+            "location": {
+                "type": "field",
+                "required": false,
+                "read_only": true,
+                "label": "Location"
+            },
+            "location_constraint": {
+                "type": "choice",
+                "required": false,
+                "read_only": false,
+                "label": "Location constraint",
+                "choices": [
+                    {
+                        "display_name": "EU",
+                        "value": "EU"
+                    },
+                    {
+                        "display_name": "eu-west-1",
+                        "value": "eu-west-1"
+                    },
+                    {
+                        "display_name": "us-west-1",
+                        "value": "us-west-1"
+                    },
+                    {
+                        "display_name": "us-west-2",
+                        "value": "us-west-2"
+                    },
+                    {
+                        "display_name": "ap-south-1",
+                        "value": "ap-south-1"
+                    },
+                    {
+                        "display_name": "ap-southeast-1",
+                        "value": "ap-southeast-1"
+                    },
+                    {
+                        "display_name": "ap-southeast-2",
+                        "value": "ap-southeast-2"
+                    },
+                    {
+                        "display_name": "ap-northeast-1",
+                        "value": "ap-northeast-1"
+                    },
+                    {
+                        "display_name": "sa-east-1",
+                        "value": "sa-east-1"
+                    },
+                    {
+                        "display_name": "cn-north-1",
+                        "value": "cn-north-1"
+                    },
+                    {
+                        "display_name": "eu-central-1",
+                        "value": "eu-central-1"
+                    }
+                ]
+            },
+            "new_bucket": {
+                "type": "string",
+                "required": false,
+                "read_only": true,
+                "label": "New bucket"
+            },
+            "request_created": {
+                "type": "datetime",
+                "required": false,
+                "read_only": true,
+                "label": "Request created"
+            },
+            "s3_error": {
+                "type": "string",
+                "required": false,
+                "read_only": true,
+                "label": "S3 error"
+            },
+            "status": {
+                "type": "string",
+                "required": false,
+                "read_only": true,
+                "label": "Status"
+            },
+            "tag_set_list": {
+                "type": "field",
+                "required": false,
+                "read_only": false,
+                "label": "Tag set list"
+            },
+            "tag_set_created": {
+                "type": "field",
+                "required": false,
+                "read_only": true,
+                "label": "Tag set created"
+            },
+            "url": {
+                "type": "field",
+                "required": false,
+                "read_only": true,
+                "label": "Url"
+            }
+        }
+    }
+}
+
+### Or with HTTPie
+http OPTIONS https://yourserver.com/api/s3-bucket/
+HTTP/1.1 200 OK
+Allow: GET, HEAD, OPTIONS, POST
+Cache-control: private
+Content-Length: 2546
+Content-Type: application/json
+Date: Wed, 11 Oct 2017 17:20:28 GMT
+Server: gunicorn/19.7.1
+
+{
+    "actions": {
+        "POST": {
+            "acl": {
+                "choices": [
+                    {
+                        "display_name": "private",
+                        "value": "private"
+                    },
+                    {
+                        "display_name": "public-read",
+                        "value": "public-read"
+                    },
+                    {
+                        "display_name": "public-read-write",
+                        "value": "public-read-write"
+                    },
+                    {
+                        "display_name": "authenticated-read",
+                        "value": "authenticated-read"
+                    }
+                ],
+                "label": "Acl",
+                "read_only": false,
+                "required": false,
+                "type": "choice"
+            },
+.....
 ```

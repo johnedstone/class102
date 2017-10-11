@@ -1,4 +1,3 @@
-# Use this file for Openshift params file
 AWS_ACCESS_KEY='access_key'
 AWS_SECRET_KEY='secret_key'
 
@@ -7,6 +6,7 @@ AWS_HTTPS_PROXY='https://ip:port'
 AWS_HTTP_PROXY='http://ip:port'
 
 PIP_PROXY=<ip:port>
+
 APPLICATION_DOMAIN=fqdn
 DJANGO_SECRET_KEY= # hashlib.sha1(os.urandom(128)).hexdigest()
 
